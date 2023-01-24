@@ -1,2 +1,2 @@
-# information-not-processing
-EIE2 Information Processing 2023
+# EIE2 Information Processing 2023
+##### Nik, Kridhay, Andrés, Steven, Hanbo, Anish
