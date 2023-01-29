@@ -5,7 +5,7 @@
 
 Basic hex to seg display.
 
-![lab1mapview](/logbook/images/lab1mapview.png)
+![lab1mapview](images/lab1mapview.png)
 
 Linking to the compilation report, you can see that we have 4 `Unconstrained Input Ports` and 7 `Unconstrained Output Ports`.
 
@@ -23,21 +23,21 @@ Quartus only lets me change temperature between 85C and 0C, minimum propogation 
 
 ### Extending to 3 hex displays
 
-![lab1task2](/logbook/images/lab1fpga.png)
+![lab1task2](images/lab1fpga.png)
 
 Note here that the maximum number displayed is 3FF since there are only 10 pins.
 
 Code modifications are as follows. For the last seg display, I concatenated the switches with two 0s so that the input would be 4 bits as required.  
 
-![lab1task2top](/logbook/images/lab1task2top.png)
+![lab1task2top](images/lab1task2top.png)
 
 > Note that SEG0, SEG1 and SEG3 are variables storing the values of HEX0, HEX1 and HEX2. This is why the accidental typo (SEG3 should be SEG2) makes no difference, as it is still mapped to the HEX2 pin.
 
 And the mapping changes:
 
-![lab1task2mapping](/logbook/images/lab1task2map.png)
+![lab1task2mapping](images/lab1task2map.png)
 
-![compiler_report](/logbook/images/lab1task2compreport.png)
+![compiler_report](images/lab1task2compreport.png)
 
 Upon inspection of the compilation report, we see that there are:
 
@@ -51,8 +51,8 @@ Upon inspection of the compilation report, we see that there are:
 
 ### Task 1: Design a NIOS II System
 
-![nios_setup1](/logbook/images/nios_setup1.png)
-![nios_setup2](/logbook/images/nios_setup2.png)
+![nios_setup1](images/nios_setup1.png)
+![nios_setup2](images/nios_setup2.png)
 
 Understanding so far:
 
@@ -67,17 +67,17 @@ Understanding so far:
 
 #### Defining Pins:
 
-![niospins](/logbook/images/niospins.png)
+![niospins](images/niospins.png)
 
 The code above is copied from the generated `nios_setup_inst.v` into the _top file_. Note that the actual pin connections are filled in manually here.
 
 At this poing, NIOS compiles but produces several (171) warnings. A couple that repeat are:
 
-```console
+```
 Warning (332060): Node: MAX10_CLK1_50 was determined to be a clock but was found without an associated clock assignment.
 ```
 And
-```console
+```
 Warning (13024): Output pins are stuck at VCC or GND
 	Warning (13410): Pin "DRAM_ADDR[0]" is stuck at GND
 	Warning (13410): Pin "DRAM_ADDR[1]" is stuck at GND
@@ -87,7 +87,7 @@ which I believe we can ignore at this stage.
 
 ### Task 2: Program a NIOS II System
 
-![helloworldcode](/logbook/images/helloworldcode.png)
+![helloworldcode](images/helloworldcode.png)
 
 > Insert explanation
 
@@ -105,7 +105,25 @@ Both from the `lab2/software/hello_sw` directory.
 
 > insert better explanation: This monitors the JTAG UART interface i think?
 
-![nioshelloworld](/logbook/images/nios2helloworld.png)
+![nioshelloworld](images/nios2helloworld.png)
+
+> This is wrong. Both leds are controlled by software. Nothing in DE10_LITE_Golden_Top.v to suggest otherwise. Adding the following line in Golden Top:
+```verilog
+assign LEDR[0] = SW[0];
+```
+would accomplish this. This is in the manual but has been omitted for our labs.
+
+# Lab 3
+
+### QSYS File:
+
+### Eclipse code explained:
+
+### Mistake made when adding files:
+added bb.v file instead of .qsys file. Qsys needs to be added AND the bb.v file  MUST BE REMOVED.
+
+
+
 
 # Appendix
 ---
@@ -209,6 +227,7 @@ HOWEVER this usually only works 1 out of 10 times, and I find the only 100% accu
 
 ```bash
 #!/bin/bash
+# credits to omar alkhatib
 
 killall jtagd
 timeout 1s jtagconfig # this will fail, cancelling it in 1 second
