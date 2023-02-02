@@ -190,7 +190,7 @@ int main() {
     alt_up_accelerometer_spi_dev * acc_dev;
     acc_dev = alt_up_accelerometer_spi_open_dev("/dev/accelerometer_spi");
     if (acc_dev == NULL) {
-			// if return 1, check if the spi ip name is "accelerometer_spi"
+	// if return 1, check if the spi ip name is "accelerometer_spi"
         return 1;
     }
 
@@ -232,12 +232,12 @@ Modifications to `main()` function included adding new definitions...
 
 ```c
 float fir_coeffs[] = {0.00464135470656760, 	0.00737747226463043,
-						-0.00240768675012549,	-0.00711018685736960,
-						0.00326564674118811, ... }; // many more FIR coeffs
+			-0.00240768675012549,	-0.00711018685736960,
+			0.00326564674118811, ... }; // many more FIR coeffs
 
 int n = sizeof(fir_coeffs)/sizeof(fir_coeffs[0]); 	// len of coeff array
-alt_32 x_read[n]; 									// raw data array
-alt_32 y; 											// filtered output
+alt_32 x_read[n]; 					// raw data array
+alt_32 y; 						// filtered output
 ```
 ... and inside the while loop, implementing a shift register ...
 
@@ -259,9 +259,6 @@ while (1) {
 }
 ```
 > TODO: Maybe pass y by reference
-
-
-
 
 
 # Appendix
