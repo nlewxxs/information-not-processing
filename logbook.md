@@ -116,11 +116,150 @@ would accomplish this. This is in the manual but has been omitted for our labs.
 # Lab 3
 
 ### QSYS File:
+![accelqsys](images/accelerometerqsys.png)
+Added the `sysid_qsys_0` component as a precaution even though the instructions did not explicitly require this.
 
-### Eclipse code explained:
+### What Project files should look like:
 
-### Mistake made when adding files:
-added bb.v file instead of .qsys file. Qsys needs to be added AND the bb.v file  MUST BE REMOVED.
+![includes](images/includefiles.png)
+Nothing else should be present, made a mistake by accidentally adding the `bb.v` file which messed up the nios system.
+
+### Basic C code explained:
+Beginning with the definitions,
+```c
+#define OFFSET -32
+#define PWM_PERIOD 16
+
+alt_8 pwm = 0;
+alt_u8 led;
+int level;
+```
+* `OFFSET` - manually offsetting the accelerometer so that the middle LEDs light up at the equilibrium position.
+* `PWM_PERIOD` - the count for the "on" portion of the PWM duty cycle.
+* `pwm` - dummy variable to keep track of the current point in the duty cycle
+* `led` - value of the top 3 bits of the accelerometer reading
+* `level` - value of the 6 LSBs
+
+LED Functions:
+
+```c
+void led_write(alt_u8 led_pattern) {
+    IOWR(LED_BASE, 0, led_pattern);
+}
+
+void convert_read(alt_32 acc_read, int * level, alt_u8 * led) {
+    acc_read += OFFSET; // calibrate
+    alt_u8 val = (acc_read >> 6) & 0x07;
+    * led = (8 >> val) | (8 << (8 - val));
+    * level = (acc_read >> 1) & 0x1f;
+}
+```
+* `led_write` - self explanatory
+* `convert_read` - calibrates the accelerometer reading, extracts the required bits for `led` and `level`
+
+> TODO: how, do not understand the bit shifts here.
+
+Interrupt Service Routine:
+```c
+void sys_timer_isr() {
+	IOWR_ALTERA_AVALON_TIMER_STATUS(TIMER_BASE, 0);
+
+  if (pwm < abs(level)) {
+		if (level < 0) {
+    		led_write(led << 1); // shift LEDs left one
+    	} else {
+            led_write(led >> 1); // shift LEDs right one
+        }
+    } else {
+        led_write(led); // keep same LED display
+    }
+    if (pwm > PWM_PERIOD) {
+        pwm = 0; // reset pwm once reaches period
+    } else {
+        pwm++;
+    }
+}
+```
+> TODO: wtf is going on hereeeeee, why are we comparing pwm to the level, if they are both constantly changing??
+
+Finally, the `main()` function:
+
+```c
+int main() {
+    alt_32 x_read;
+    alt_up_accelerometer_spi_dev * acc_dev;
+    acc_dev = alt_up_accelerometer_spi_open_dev("/dev/accelerometer_spi");
+    if (acc_dev == NULL) {
+			// if return 1, check if the spi ip name is "accelerometer_spi"
+        return 1;
+    }
+
+    timer_init(sys_timer_isr); // set the isr
+    while (1) {
+
+        alt_up_accelerometer_spi_read_x_axis(acc_dev, & x_read);
+        alt_printf("raw data: %x\n", x_read);
+        convert_read(x_read, & level, & led);
+    }
+    return 0;
+}
+```
+* Defines `x_read` as an `alt_32` integer type, which is a lighter _Altera_ version of a 32-bit integer designed for the FPGA board.
+* Creates pointer to `acc_dev`, a location to the _SPI_ connection.
+* Sets ISR (timer_init function not shown)
+* Loops infinitely, reading the accelerometer value, printing it and converting + displaying.
+
+### N-Tap FIR Filter:
+First, begin by creating a rudeimentary FIR function for an N-Tap filter:
+
+```c
+alt_32 fir(float coeffs[], alt_32 raw_data[], int n){
+	float y = 0; // output
+
+	for (; n > 0; n--){
+		alt_printf("n value: %x\n", (alt_32)(n-1));
+		// multiply each input by corresponding coefficient
+		y += coeffs[n-1]*(float)raw_data[n-1];
+	}
+	return (alt_32) y; // cast back to alt_32
+}
+```
+> TODO: The print statement here makes it run smoother? not sure why, but without the `alt_printf` here the LEDs are far laggier.
+
+Note that the calculations need to be done in `float` format, so we cast the _raw_data_ array to `float` and then recast back to `alt_32` after.
+
+Modifications to `main()` function included adding new definitions...
+
+```c
+float fir_coeffs[] = {0.00464135470656760, 	0.00737747226463043,
+						-0.00240768675012549,	-0.00711018685736960,
+						0.00326564674118811, ... }; // many more FIR coeffs
+
+int n = sizeof(fir_coeffs)/sizeof(fir_coeffs[0]); 	// len of coeff array
+alt_32 x_read[n]; 									// raw data array
+alt_32 y; 											// filtered output
+```
+... and inside the while loop, implementing a shift register ...
+
+```c
+while (1) {
+	// shift register
+	for (int i = 0; i < n; i++){
+		x_read[i+1] = x_read[i];
+	}
+
+	// update accel value
+	alt_up_accelerometer_spi_read_x_axis(acc_dev, & x_read[0]);
+
+	// filter output
+	y = fir(fir_coeffs, x_read, n);
+
+	alt_printf("y value: %x\n", y);
+	convert_read(y, & level, & led);
+}
+```
+> TODO: Maybe pass y by reference
+
 
 
 
