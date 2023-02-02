@@ -258,7 +258,7 @@ while (1) {
 	convert_read(y, & level, & led);
 }
 ```
-> TODO: Maybe pass y by reference
+> TODO: Maybe pass y by reference, and change the shift register array to a queue, using enqueue and dequeue() functions.
 
 The coefficients were for the following LPF designed in matlab:
 
@@ -268,6 +268,75 @@ lpFilt = designfilt('lowpassfir', 'PassbandFrequency', 300, 'StopbandFrequency',
 With transfer function:
 
 ![transferfunc](images/matlabfir.png)
+
+### Challenge: Experimenting with Quantizing the filter:
+
+First we must quantize the coefficents:
+```c
+alt_32 int_coeffs[n];
+
+for(int j = 0; j < n; j++){
+  int_coeffs[j] = (alt_32)round(fir_coeffs[j]*100000); // populate quantized coeffs
+  // multiplying by 10^m to grab m of the decimal places
+}
+```
+Where the `round` function, included in `<math.h>`, rounds to the nearest integer.
+
+We then define a new function, `fir_quantized`, which takes in quantized coefficients and performs integer arithmetic. This is pretty much the same code, except we return:
+
+```c
+return round(y/100000);
+```
+To reverse the quantisation.
+
+### Timing number of Ticks
+
+The instructions provided in the lab did not work. Instead of using the `sys/times.h` library, we used the altera `sys/alt_timestamp.h` library. This requires the definition
+```c
+#define ALT_TIMESTAMP_CLK TIMER
+```
+> TIMER is the name of our Interval Timer in the .qsys file
+
+Then inside the `main()` function, first create two variables for storing the start and end time respectively:
+```c
+alt_u64 start_time;
+alt_u64 end_time;
+```
+> I used unsigned 64-bit integers because clock ticks are large numbers, perhaps 32 bits would also be sound.
+
+and (before entering the loop) call the
+
+```c
+alt_timestamp_start();
+```
+function. This initialises the timer, otherwise you will get undefined behaviour. Getting starting and ending times can then be done using
+
+```c
+start_time = alt_timestamp();
+// .. code you're timing ..
+end_time = alt_timestamp();
+```
+and printed using:
+```c
+printf("Number of ticks: %llu \n", end_time - start_time);
+```
+Where `%llu` is for `long long unsigned` integers, which is exactly what we have. Note that this is `printf`, not it's Altera cousin `alt_printf`!!!
+
+> NOTE: For whatever reason, this prevents the LEDs from being updated. The accelerometer is still being read from - printing the `y` value you will see it changing as you tilt the board exactly as before. Not sure why this is happening, don't care.
+
+### Observing the effect on the transfer function
+Using matlab, we can see the effect on the transfer function for:
+
+#### 1 fixed point
+![1 fixed point transfer func](images/1dpFIR.png)
+
+#### 2 fixed points
+![2 fixed points transfer func](images/2dpFIR.png)
+
+#### 3 fixed points
+![3 fixed points](images/3dpFIR.png)
+
+> TODO: explain
 
 
 # Appendix
