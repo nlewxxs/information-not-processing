@@ -260,6 +260,15 @@ while (1) {
 ```
 > TODO: Maybe pass y by reference
 
+The coefficients were for the following LPF designed in matlab:
+
+```bash
+lpFilt = designfilt('lowpassfir', 'PassbandFrequency', 300, 'StopbandFrequency', 350, 'PassbandRipple', 0.5, 'StopbandAttenuation', 65, 'SampleRate', 1e3);
+```
+With transfer function:
+
+![transferfunc](images/matlabfir.png)
+
 
 # Appendix
 ---
