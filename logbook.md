@@ -324,6 +324,26 @@ Where `%llu` is for `long long unsigned` integers, which is exactly what we have
 
 > NOTE: For whatever reason, this prevents the LEDs from being updated. The accelerometer is still being read from - printing the `y` value you will see it changing as you tilt the board exactly as before. Not sure why this is happening, don't care.
 
+By changing the **while** loop to a finite **for** loop, we can time for _10000 cycles_ and divide by _10000_ to get the ticks per cycle. We repeat this 5 times for the **float coefficients FIR** and find the average:
+
+> Note this is for a 49-tap filter !!
+
+| 10000 cycles | take 1 | take 2 | take 2 | take 4 | take 5 | Average |
+|:--------:|:------------:|:----:|:---:|:---:|:---:|:---:|
+| **time** | 429496.72 | 429496.72 |429496.72 | 429496.72|429496.72 | **429496.72**|
+
+As expected, the value does not change after re-building and re-running the program.
+
+Investigating this for fixed point calculations:
+
+|Number of fixed points| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
+|:-------:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|**n ticks / cycle** |15681.48|51798.25|53073.87|63463.16|68689.56|75182.78|83018.50|76558.83|85246.56|
+
+![ticks to points](images/ticks.png)
+
+There is a sharp increase from 1 points to 2, but the number of clock cycles starts to plateau around 7-9 fixed points.
+
 ### Observing the effect on the transfer function
 Using matlab, we can see the effect on the transfer function for:
 
@@ -337,6 +357,18 @@ Using matlab, we can see the effect on the transfer function for:
 ![3 fixed points](images/3dpFIR.png)
 
 > TODO: explain
+
+#### 5 fixed points:
+![5 fixed points](images/5dpFIR.png)
+
+around 5dp the transfer function is almost indistinguishable.
+
+> TODO: summarise optimisation - fewer cycles. Take video.
+> TODO: Embed video of FPGA
+
+can see evidence of it working:
+
+[![asciicast](https://asciinema.org/a/ZPjhEmmEe0faKd05vbNGKYROj.svg)](https://asciinema.org/a/ZPjhEmmEe0faKd05vbNGKYROj)
 
 
 # Appendix
