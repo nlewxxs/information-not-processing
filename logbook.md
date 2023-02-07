@@ -611,7 +611,9 @@ jtagconfig
 
 And the board is correctly identified :)
 
-### Lab4Task2 Full code
+## Lab4Task2 Full code
+
+### Host:
 
 ```python
 import time
@@ -664,4 +666,42 @@ def main():
 if __name__ == '__main__':
     main()
 
+```
+
+### NIOS (modifications, full code not shown):
+
+```c
+while(1) {
+
+    	for(alt_u8 j = 0; j < 200; j++){
+    		// shift register
+			for (int i = 0; i < n; i++){
+				x_read[i+1] = x_read[i];
+			}
+
+			// update accel value
+			alt_up_accelerometer_spi_read_x_axis(acc_dev, & x_read[0]);
+			// filter output
+
+			if (mode == 1) {
+				y = fir_quantized(int_coeffs, x_read, n);
+			} else if (mode == 0) {
+				y = x_read[0];
+			}
+			//alt_printf("y value: %x\n", y);
+
+			convert_read(y, & level, & led);
+    		}
+
+    	if (fp) {
+    		prompt = getc(fp);
+    		fprintf(fp, "<--> Detected the character %c <--> \n", prompt);
+    		if (prompt == '1') {
+    			mode = 1;
+    		} else if (prompt == '0') {
+    			mode = 0;
+    		}
+
+    	}
+    }
 ```
