@@ -209,7 +209,7 @@ int main() {
 * Sets ISR (timer_init function not shown)
 * Loops infinitely, reading the accelerometer value, printing it and converting + displaying.
 
-### N-Tap FIR Filter:
+## N-Tap FIR Filter:
 First, begin by creating a rudeimentary FIR function for an N-Tap filter:
 
 ```c
@@ -269,7 +269,9 @@ With transfer function:
 
 ![transferfunc](images/matlabfir.png)
 
-### Challenge: Experimenting with Quantizing the filter:
+## Challenge: Optimizing the FIR using quantization
+
+### Experimenting with Quantizing the filter:
 
 First we must quantize the coefficents:
 ```c
@@ -370,6 +372,105 @@ can see evidence of it working:
 
 [![asciicast](https://asciinema.org/a/ZPjhEmmEe0faKd05vbNGKYROj.svg)](https://asciinema.org/a/ZPjhEmmEe0faKd05vbNGKYROj)
 
+# Lab 4
+
+## Task 1: UART communication with a host PC
+
+![system clock component](images/sysclockqsys.png)
+![sram](images/sdramqsys.png)
+these are the only two observable differences inside the qsys file
+
+understood.
+
+## Task 2: Extending Lab 3 Design
+
+First problem is that we are unable to load the task1 test code onto the lab3 program. The following error is returned:
+
+```
+Verify failed between address 0x800000 and 0x80FFFF
+Leaving target processor paused
+```
+Which indicates that there is not enough memory onboard the DE10 to store our program. We solve this by building our Lab3 design on top of the Lab4 qsys file, which has an SRAM component - NO. ADDED MORE MEM IN FPGA, SHOW SPECS ETC AND CHANGE IN QSYS. REGEN BSP AND NEW PROJECT
+
+no small library shit (image)
+
+added sys clock ? ns why
+
+accel was lagging with uart, testing using this:
+
+```c
+while(1) {
+    	for (alt_u8 j = 0, j < 200, j++){
+				// ... do accelerometer stuff 200 times
+			}
+			if (fp) {
+				fprintf(fp, "Count: %x\n", tmp);
+				tmp++;
+			}
+    	}
+```
+[![asciicast](https://asciinema.org/a/hkniESpOh9yXT892Dk5O3r3Eh.svg)](https://asciinema.org/a/hkniESpOh9yXT892Dk5O3r3Eh)
+
+This ran smoothly, so we can conclude that it is the `getc()` function that is hanging the program and making the accelerometer buggy, when there is nothing in the `prompt` buffer.
+
+#### 2 Options for solution:
+1. Only open the `/dev/jtag_uart` file when you want to read, read one character, then close it.
+2. Constantly populate the uart chain with an arbitrary character
+
+> The problem with the first option is that it requires precise timing - the host's character must be present in `fp` when the program checks. If it isn't, and `fp` is closed, then the character will be lost. Also, there is a delay in opening and closing the file constantly.
+
+> We tried option two - as long as we held down a character on the keyboard, the accelerometer ran flawlessly and the characters were being processed in real-time!
+
+#### Design Decision:
+Host will keep the `jtag_uart` connection filled with an arbitrary character until it wants to send a control signal.
+
+Got host to do subprocess stuff:
+
+```python
+import time
+import threading
+import readchar
+from pexpect.popen_spawn import PopenSpawn as newprocess
+import pexpect
+
+control = str # init a global, not too concerned about memory on the host side.
+
+def get_input():
+	global control
+	while True:
+		control = str(readchar.readchar())
+		time.sleep(0.1)
+
+def main():
+    	global control
+    	control = "a"
+    	logs = open('logs.txt', 'w')
+    	process = newprocess('nios2-terminal')
+    	t2 = threading.Thread(target=get_input)
+    	t2.setDaemon(True)
+    	t2.start()
+    	while True:
+    		print('control: ' + control)
+    		if control in ['0', '1']:
+    			print("### SENDING CONTROL SIGNAL: " + control + ' ###')
+    			for i in range(5):
+    				process.send(control)	# send a pulse of 5 control signals just in case
+    				time.sleep(0.1)
+    			control = 'a'			# reset to usual value
+    		elif control == 'q':
+    			return 0
+    		else:
+    			process.send('a')
+    			time.sleep(0.1) 	
+
+if __name__ == '__main__':
+    main()
+```
+
+[![asciicast](https://asciinema.org/a/Nod7UjUjg0WvbGyF41Rygd8g8.svg)](https://asciinema.org/a/Nod7UjUjg0WvbGyF41Rygd8g8)
+
+Fully working:
+[![asciicast](https://asciinema.org/a/00fZlZct5aZ7zJvEdsYN79uJL.svg)](https://asciinema.org/a/00fZlZct5aZ7zJvEdsYN79uJL)
 
 # Appendix
 ---
@@ -509,3 +610,58 @@ jtagconfig
 ```
 
 And the board is correctly identified :)
+
+### Lab4Task2 Full code
+
+```python
+import time
+import threading
+import readchar
+from pexpect.popen_spawn import PopenSpawn as newprocess
+import pexpect
+import shutup
+import os
+
+control = str # init a global, not too concerned about memory on the host side.
+
+def get_input():
+    global control
+    while True:
+        control = str(readchar.readchar())
+        time.sleep(0.1)    
+
+def main():
+
+    shutup.please() # blocks deprecation warnings
+
+    os.system("echo 'NIOS II Host Controller' | lolcat -F 0.6")
+    print("-----------------------------------------------\n")
+    print("Press 1 to enable filtering, 0 for raw accelerometer data. Press q to quit\n")
+    print("-----------------------------------------------\n")
+
+    global control
+    control = "a"
+
+    process = newprocess('nios2-terminal') # init the nios2-terminal shell
+
+    t2 = threading.Thread(target=get_input) # init the character reading thread
+    t2.setDaemon(True) # shouldn't prevent program from closing
+    t2.start()
+
+    while True:
+        if control in ['0', '1']:
+            print(">> sending control signal: " + control)
+            for i in range(5):
+                process.send(control)    # send a pulse of 5 control signals just in case
+                time.sleep(0.1)
+            control = 'a'            # reset to usual value
+        elif control == 'q':
+            return 0
+        else:
+            process.send('a')
+            time.sleep(0.1)     
+
+if __name__ == '__main__':
+    main()
+
+```
