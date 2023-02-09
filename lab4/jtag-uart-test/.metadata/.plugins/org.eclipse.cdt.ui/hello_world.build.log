@@ -1,28 +1,19 @@
-12:02:19 **** Incremental Build of configuration Nios II for project hello_world ****
+17:58:03 **** Incremental Build of configuration Nios II for project hello_world ****
 make all 
 Info: Building /home/nik/eie/ip/lab4/jtag-uart-test/software/hello_sw_bsp/
 make --no-print-directory -C /home/nik/eie/ip/lab4/jtag-uart-test/software/hello_sw_bsp/
 [BSP build complete]
 Info: Compiling hello_world.c to obj/default/hello_world.o
 nios2-elf-gcc -xc -MP -MMD -c -I/home/nik/eie/ip/lab4/jtag-uart-test/software/hello_sw_bsp//HAL/inc -I/home/nik/eie/ip/lab4/jtag-uart-test/software/hello_sw_bsp/ -I/home/nik/eie/ip/lab4/jtag-uart-test/software/hello_sw_bsp//drivers/inc -pipe -D__hal__ -DALT_NO_INSTRUCTION_EMULATION -DALT_SINGLE_THREADED    -O0 -g -Wall  -mno-hw-div -mhw-mul -mno-hw-mulx -mgpopt=global  -o obj/default/hello_world.o hello_world.c
-hello_world.c: In function 'main':
-hello_world.c:215:18: error: too few arguments to function 'getc'
-  215 |         prompt = getc();
-      |                  ^~~~
-In file included from hello_world.c:26:
-/home/nik/intelFPGA/nios2eds/bin/gnu/H-x86_64-pc-linux-gnu/nios2-elf/include/stdio.h:254:5: note: declared here
-  254 | int getc (FILE *);
-      |     ^~~~
-hello_world.c:208:14: warning: unused variable 'digit' [-Wunused-variable]
-  208 |        alt_8 digit = 0;
-      |              ^~~~~
-hello_world.c:207:14: warning: unused variable 'count' [-Wunused-variable]
-  207 |        alt_8 count = 0;
-      |              ^~~~~
-hello_world.c:160:9: warning: unused variable 'n_coeffs' [-Wunused-variable]
-  160 |     int n_coeffs = 5; // for a  49-tap filter
-      |         ^~~~~~~~
-make: *** [Makefile:721: obj/default/hello_world.o] Error 1
+Info: Linking hello_sw.elf
+nios2-elf-g++ -T'/home/nik/eie/ip/lab4/jtag-uart-test/software/hello_sw_bsp//linker.x' -msys-crt0='/home/nik/eie/ip/lab4/jtag-uart-test/software/hello_sw_bsp//obj/HAL/src/crt0.o' -msys-lib=hal_bsp -L/home/nik/eie/ip/lab4/jtag-uart-test/software/hello_sw_bsp/   -Wl,-Map=hello_sw.map   -O0 -g -Wall  -mno-hw-div -mhw-mul -mno-hw-mulx -mgpopt=global  -o hello_sw.elf obj/default/hello_world.o -lm -msys-lib=m
+nios2-elf-insert hello_sw.elf --thread_model hal --cpu_name cpu --qsys true --simulation_enabled false --id 0 --sidp 0x41050 --timestamp 1675724754 --stderr_dev jtag_uart --stdin_dev jtag_uart --stdout_dev jtag_uart --sopc_system_name nios_accelerometer --quartus_project_dir "/home/nik/eie/ip/lab3/Golden_Top" --jdi /home/nik/eie/ip/lab3/Golden_Top/DE10_LITE_Golden_Top.jdi --sopcinfo /home/nik/eie/ip/lab3/Golden_Top/nios_accelerometer.sopcinfo
+Picked up JAVA_TOOL_OPTIONS: -Dsun.java2d.uiScale=2
+Info: (hello_sw.elf) 91 KBytes program size (code + initialized data).
+Info:                29 KBytes free for stack + heap.
+Info: Creating hello_sw.objdump
+nios2-elf-objdump --disassemble --syms --all-header --source hello_sw.elf >hello_sw.objdump
+[hello_sw build complete]
 
-12:02:21 Build Finished (took 1s.627ms)
+17:58:05 Build Finished (took 1s.801ms)
 

@@ -134,30 +134,27 @@ int main() {
 			-0.00240768675012549,	0.00737747226463043,
 			0.00464135470656760};
 
+	int n = 49; 	// len of coeff array
 	// init coeffs from matlab
-	float *fir_coeffs = malloc(sizeof(float)*49 + 1); // init a 49-tap filter
-	for (int coeff = 0; coeff < 49; coeff++){
+	float *fir_coeffs = calloc((n+1), sizeof(float)); // init a 49-tap filter, leave space for null pointer
+	for (int coeff = 0; coeff < n; coeff++){
 		fir_coeffs[coeff] = matlab_coeffs[coeff]; // populating
 	}
 
 
-
-	int n = sizeof(*fir_coeffs)/sizeof(fir_coeffs[0]); 	// len of coeff array
     alt_32 x_read[n]; 									// raw data array
     alt_32 y; 											// filtered output
 
     alt_32 int_coeffs[n];
     for(int j = 0; j < n; j++){
-    		int_coeffs[j] = (alt_32)round(fir_coeffs[j]*100000); // populate quantized coeffs
-    		// multiplying by 10^m to grab m of the decimal places
-    	}
+    	int_coeffs[j] = (alt_32)round(fir_coeffs[j]*100000); // populate quantized coeffs
+    	// multiplying by 10^m to grab m of the decimal places
+    }
 
     FILE* fp;
     alt_8 mode = 0; // mode 0 = unfiltered, mode 1 = filtered.
     char prompt = 0;
     fp = fopen ("/dev/jtag_uart", "r+");
-
-    int n_coeffs = 5; // for a  49-tap filter
 
     alt_up_accelerometer_spi_dev * acc_dev;
     acc_dev = alt_up_accelerometer_spi_open_dev("/dev/accelerometer_spi");
@@ -180,9 +177,12 @@ int main() {
 			// filter output
 
 			if (mode == 1) {
+
 				y = fir_quantized(int_coeffs, x_read, n);
 				alt_printf("y value (filtered): %x\n", y);
+
 			} else if (mode == 0) {
+
 				y = x_read[0];
 				alt_printf("y value (raw): %x\n", y);
 			}
@@ -201,70 +201,61 @@ int main() {
 
     			alt_printf("BOARD: preparing for coefficient update\n");
 
-    		    char *coeff_buffer = malloc(sizeof(char)*30); // hoping that nobody decides to put more than 30 d.p
-    		    coeff_buffer = "";
+    			char *buffer = calloc(30, sizeof(char));
+    			float *new_coeffs = calloc(49, sizeof(char));
+    			buffer[29] = '\0'; // set a null pointer
 
-    			alt_8 count = 0;
-    			alt_8 digit = 0;
+    			int coeff_count = 0; // counts number of coeffs
+    			int character_count = 0;
 
-    			prompt = getc(fp);
+    			prompt = getc(fp); // reads from jtag_uart interface
 
     			while (prompt != 'x'){
-    				alt_printf("BOARD: received %c\n", prompt);
-    				strncat(coeff_buffer, &prompt, 1);
-    				prompt = getc();
+    				fflush(stdout);
+    				alt_printf("BOARD << received: %c \n", prompt);
+    				fflush(stdout);
+
+    				if (prompt == ','){
+
+    					new_coeffs[coeff_count] = atof(buffer);
+    					for(; character_count > 0; character_count--){
+    						buffer[character_count] = '\0'; // two in one: clears buffer, and resets char count to 0
+    					}
+    					coeff_count++;
+
+    				} else {
+
+						buffer[character_count] = prompt;
+						character_count++;
     				}
-    			printf("<UPDATED_COEFFICIENTS> %s\n", coeff_buffer);
+
+    				prompt = getc(fp);
     			}
 
+    			fprintf(fp, "<UPDATED_COEFFICIENTS> %f\n", new_coeffs[0]);
+    			fprintf(fp, "<UPDATED_COEFFICIENTS> %f\n", new_coeffs[1]);
+    			fprintf(fp, "<UPDATED_COEFFICIENTS> %f\n", new_coeffs[2]);
+    			fprintf(fp, "<UPDATED_COEFFICIENTS> %f\n", new_coeffs[3]);
+    			fprintf(fp, "<UPDATED_COEFFICIENTS> %f\n", new_coeffs[4]);
+    			fprintf(fp, "...\n");
+    			fprintf(fp, "<UPDATED_COEFFICIENTS> %f\n", new_coeffs[49]);
 
-    			//printf("<UPDATED_COEFFICIENTS> %f\n", new_coeffs[1]);
-//    			printf("<UPDATED_COEFFICIENTS> %f\n", new_coeffs[2]);
-//    			printf("<UPDATED_COEFFICIENTS> %f\n", new_coeffs[3]);
-//    			printf("<UPDATED_COEFFICIENTS> %f\n", new_coeffs[4]);
-//    			printf("<UPDATED_COEFFICIENTS> %f\n", new_coeffs[5]);
-    			printf("......\n");
+    			for(int newc = 0; newc < 50; newc++){
+    				fir_coeffs[newc] = new_coeffs[newc];
+    				int_coeffs[newc] = (alt_32)round(new_coeffs[newc]*100000);
+    			}
+
+    			free(buffer);
+    			free(new_coeffs);
+    			buffer=NULL;
+    			new_coeffs=NULL;
 
     		}
 
     	}
+    }
 
 
     return 0;
 }
-
-//while (prompt != 'x'){
-//	alt_printf("BOARD: received %c\n", prompt);
-//
-//	if(prompt == ','){
-//		alt_printf("inside , if statement");
-//
-//		new_coeffs[count] = atof(coeff_buffer);
-//		printf("adding: %f\n", atof(coeff_buffer));
-//		memset(coeff_buffer, 0, strlen(coeff_buffer));
-//		count++;
-//		digit = 0;
-//	} else {
-//		alt_printf("concatenating buffer\n");
-//		strncat(coeff_buffer, &prompt, 1);
-//		printf("current buffer: %s\n", coeff_buffer);
-//		digit++;
-//	}
-//	alt_printf("reading prompt after %c\n", prompt);
-//	prompt = getc(fp);
-//	alt_printf("read prompt %c\n", prompt);
-//}
-//free(coeff_buffer);
-//coeff_buffer=NULL;
-//
-//printf("<UPDATED_COEFFICIENTS> %f\n", new_coeffs[0]);
-//printf("<UPDATED_COEFFICIENTS> %f\n", new_coeffs[1]);
-////    			printf("<UPDATED_COEFFICIENTS> %f\n", new_coeffs[2]);
-////    			printf("<UPDATED_COEFFICIENTS> %f\n", new_coeffs[3]);
-////    			printf("<UPDATED_COEFFICIENTS> %f\n", new_coeffs[4]);
-////    			printf("<UPDATED_COEFFICIENTS> %f\n", new_coeffs[5]);
-//printf("......\n");
-//
-//free(new_coeffs);
-//new_coeffs=NULL;
 
