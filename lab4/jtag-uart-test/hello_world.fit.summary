@@ -1,0 +1,18 @@
+Fitter Status : Successful - Sat Jan 30 17:38:57 2021
+Quartus Prime Version : 20.1.1 Build 720 11/11/2020 SJ Lite Edition
+Revision Name : hello_world
+Top-level Entity Name : hello_world
+Family : MAX 10
+Device : 10M50DAF484C6GES
+Timing Models : Preliminary
+Total logic elements : 4,148 / 49,760 ( 8 % )
+    Total combinational functions : 3,626 / 49,760 ( 7 % )
+    Dedicated logic registers : 2,612 / 49,760 ( 5 % )
+Total registers : 2680
+Total pins : 47 / 360 ( 13 % )
+Total virtual pins : 0
+Total memory bits : 64,896 / 1,677,312 ( 4 % )
+Embedded Multiplier 9-bit elements : 0 / 288 ( 0 % )
+Total PLLs : 0 / 4 ( 0 % )
+UFM blocks : 0 / 1 ( 0 % )
+ADC blocks : 0 / 2 ( 0 % )

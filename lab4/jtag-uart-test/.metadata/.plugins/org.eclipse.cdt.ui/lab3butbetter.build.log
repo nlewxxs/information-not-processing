@@ -1,0 +1,15 @@
+17:39:10 **** Incremental Build of configuration Nios II for project lab3butbetter ****
+make all 
+Info: Building /home/nik/eie/ip/lab4/jtag-uart-test/software/lab3butbetter_bsp/
+make --no-print-directory -C /home/nik/eie/ip/lab4/jtag-uart-test/software/lab3butbetter_bsp/
+[BSP build complete]
+Info: Compiling hello_world_small.c to obj/default/hello_world_small.o
+nios2-elf-gcc -xc -MP -MMD -c -I/home/nik/eie/ip/lab4/jtag-uart-test/software/lab3butbetter_bsp//HAL/inc -I/home/nik/eie/ip/lab4/jtag-uart-test/software/lab3butbetter_bsp/ -I/home/nik/eie/ip/lab4/jtag-uart-test/software/lab3butbetter_bsp//drivers/inc -pipe -D__hal__ -DALT_NO_C_PLUS_PLUS -DALT_NO_CLEAN_EXIT -D'exit(a)=_exit(a)' -DALT_NO_EXIT -DALT_USE_DIRECT_DRIVERS -DALT_NO_INSTRUCTION_EMULATION -DALT_USE_SMALL_DRIVERS -DALT_SINGLE_THREADED    -Os -g -Wall  -mno-hw-div -mno-hw-mul -mno-hw-mulx -mgpopt=global  -o obj/default/hello_world_small.o hello_world_small.c
+hello_world_small.c:4:10: fatal error: altera_up_avalon_accelerometer_spi.h: No such file or directory
+    4 | #include "altera_up_avalon_accelerometer_spi.h"
+      |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+compilation terminated.
+make: *** [Makefile:721: obj/default/hello_world_small.o] Error 1
+
+17:39:12 Build Finished (took 1s.720ms)
+

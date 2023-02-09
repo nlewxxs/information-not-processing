@@ -1,0 +1,111 @@
+# -------------------------------------------------------------------------- #
+#
+# Copyright (C) 1991-2012 Altera Corporation
+# Your use of Altera Corporation's design tools, logic functions 
+# and other software and tools, and its AMPP partner logic 
+# functions, and any output files from any of the foregoing 
+# (including device programming or simulation files), and any 
+# associated documentation or information are expressly subject 
+# to the terms and conditions of the Altera Program License 
+# Subscription Agreement, Altera MegaCore Function License 
+# Agreement, or other applicable license agreement, including, 
+# without limitation, that your use is for the sole purpose of 
+# programming logic devices manufactured by Altera and sold by 
+# Altera or its authorized distributors.  Please refer to the 
+# applicable agreement for further details.
+#
+# -------------------------------------------------------------------------- #
+#
+# Quartus II 32-bit
+# Version 12.0 Build 178 05/31/2012 SJ Full Version
+# Date created = 12:12:59  November 25, 2012
+#
+# -------------------------------------------------------------------------- #
+#
+# Notes:
+#
+# 1) The default values for assignments are stored in the file:
+#		hello_world_assignment_defaults.qdf
+#    If this file doesn't exist, see file:
+#		assignment_defaults.qdf
+#
+# 2) Altera recommends that you do not modify this file. This
+#    file is updated automatically by the Quartus II software
+#    and any changes you make may be lost or overwritten.
+#
+# -------------------------------------------------------------------------- #
+
+
+set_global_assignment -name FAMILY "MAX 10"
+set_global_assignment -name DEVICE 10M50DAF484C6GES
+set_global_assignment -name TOP_LEVEL_ENTITY hello_world
+set_global_assignment -name ORIGINAL_QUARTUS_VERSION 12.0
+set_global_assignment -name PROJECT_CREATION_TIME_DATE "12:12:59  NOVEMBER 25, 2012"
+set_global_assignment -name LAST_QUARTUS_VERSION "20.1.0 Lite Edition"
+set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
+set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
+set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
+set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
+set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "3.3-V LVTTL"
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
+set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
+set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+set_global_assignment -name TIMING_ANALYZER_DO_REPORT_TIMING ON
+set_global_assignment -name BOARD "MAX 10 DE10 - Lite"
+
+set_location_assignment PIN_N14 -to iCLK_50
+set_location_assignment PIN_Y21 -to DRAM_DQ[0]
+set_location_assignment PIN_Y20 -to DRAM_DQ[1]
+set_location_assignment PIN_H21 -to DRAM_DQ[10]
+set_location_assignment PIN_H22 -to DRAM_DQ[11]
+set_location_assignment PIN_G22 -to DRAM_DQ[12]
+set_location_assignment PIN_G20 -to DRAM_DQ[13]
+set_location_assignment PIN_G19 -to DRAM_DQ[14]
+set_location_assignment PIN_F22 -to DRAM_DQ[15]
+set_location_assignment PIN_AA22 -to DRAM_DQ[2]
+set_location_assignment PIN_AA21 -to DRAM_DQ[3]
+set_location_assignment PIN_Y22 -to DRAM_DQ[4]
+set_location_assignment PIN_W22 -to DRAM_DQ[5]
+set_location_assignment PIN_W20 -to DRAM_DQ[6]
+set_location_assignment PIN_V21 -to DRAM_DQ[7]
+set_location_assignment PIN_P21 -to DRAM_DQ[8]
+set_location_assignment PIN_J22 -to DRAM_DQ[9]
+
+
+set_location_assignment PIN_T22 -to oDRAM_BA[1]
+set_location_assignment PIN_T21 -to oDRAM_BA[0]
+set_location_assignment PIN_U21 -to oDRAM_CAS_N
+set_location_assignment PIN_N22 -to oDRAM_CKE
+set_location_assignment PIN_L14 -to oDRAM_CLK
+set_location_assignment PIN_U20 -to oDRAM_CS_N
+set_location_assignment PIN_U22 -to oDRAM_RAS_N
+set_location_assignment PIN_V20 -to oDRAM_WE_N
+set_location_assignment PIN_P20 -to oDRAM_A[11]
+set_location_assignment PIN_T20 -to oDRAM_A[10]
+set_location_assignment PIN_P19 -to oDRAM_A[9]
+set_location_assignment PIN_P18 -to oDRAM_A[8]
+set_location_assignment PIN_R18 -to oDRAM_A[7]
+set_location_assignment PIN_T19 -to oDRAM_A[6]
+set_location_assignment PIN_T18 -to oDRAM_A[5]
+set_location_assignment PIN_U19 -to oDRAM_A[4]
+set_location_assignment PIN_U18 -to oDRAM_A[3]
+set_location_assignment PIN_V18 -to oDRAM_A[2]
+set_location_assignment PIN_W19 -to oDRAM_A[1]
+set_location_assignment PIN_U17 -to oDRAM_A[0]
+set_location_assignment PIN_J21 -to oDRAM_DQM[1]
+set_location_assignment PIN_V22 -to oDRAM_DQM[0]
+
+set_global_assignment -name CYCLONEII_RESERVE_NCEO_AFTER_CONFIGURATION "USE AS REGULAR IO"
+set_global_assignment -name QSYS_FILE qsys_system/cpu.qsys
+set_global_assignment -name SDC_FILE hw_dev_tutorial.sdc
+set_global_assignment -name BDF_FILE hello_world.bdf
+set_global_assignment -name QIP_FILE pll_sdram.qip
+set_global_assignment -name SIP_FILE pll_sdram.sip
+set_global_assignment -name SEARCH_PATH "/home/e2/Documents/DSD_Material_Students/jtag-uart-test"
+set_global_assignment -name SEARCH_PATH "/home/e2/Documents/DSD_Material_Students/jtag-uart-test/qsys_system"
+set_global_assignment -name TIMING_ANALYZER_MULTICORNER_ANALYSIS ON
+set_global_assignment -name EDA_GENERATE_FUNCTIONAL_NETLIST OFF -section_id eda_board_design_symbol
+set_global_assignment -name EDA_GENERATE_FUNCTIONAL_NETLIST OFF -section_id eda_board_design_signal_integrity
+set_global_assignment -name EDA_GENERATE_FUNCTIONAL_NETLIST OFF -section_id eda_board_design_timing
+set_global_assignment -name EDA_GENERATE_FUNCTIONAL_NETLIST OFF -section_id eda_board_design_boundary_scan
+set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

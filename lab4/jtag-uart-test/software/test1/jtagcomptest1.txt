@@ -1,0 +1,137 @@
+00811bf4 l     O .rwdata	00001060 jtag_uart
+00000000 l    df *ABS*	00000000 altera_avalon_jtag_uart_fd.c
+00000000 l    df *ABS*	00000000 altera_avalon_jtag_uart_init.c
+0080f194 l     F .text	0000020c altera_avalon_jtag_uart_irq
+0080f3a0 l     F .text	000000a0 altera_avalon_jtag_uart_timeout
+00000000 l    df *ABS*	00000000 altera_avalon_jtag_uart_ioctl.c
+00000000 l    df *ABS*	00000000 altera_avalon_jtag_uart_read.c
+00000000 l    df *ABS*	00000000 altera_avalon_jtag_uart_write.c
+0080f59c g     F .text	00000220 altera_avalon_jtag_uart_read
+0080f0d4 g     F .text	000000c0 altera_avalon_jtag_uart_init
+0080f7bc g     F .text	00000228 altera_avalon_jtag_uart_write
+0080f440 g     F .text	00000068 altera_avalon_jtag_uart_close
+0080ef70 g     F .text	00000060 altera_avalon_jtag_uart_read_fd
+0080f030 g     F .text	00000050 altera_avalon_jtag_uart_close_fd
+0080f080 g     F .text	00000054 altera_avalon_jtag_uart_ioctl_fd
+0080efd0 g     F .text	00000060 altera_avalon_jtag_uart_write_fd
+0080f4a8 g     F .text	000000f4 altera_avalon_jtag_uart_ioctl
+	fp = fopen ("/dev/jtag_uart", "r+");
+    ALTERA_AVALON_JTAG_UART_INIT ( JTAG_UART, jtag_uart);
+  80ef44:	080f0d40 	call	80f0d4 <altera_avalon_jtag_uart_init>
+0080ef70 <altera_avalon_jtag_uart_read_fd>:
+altera_avalon_jtag_uart_read_fd(alt_fd* fd, char* buffer, int space)
+    altera_avalon_jtag_uart_dev* dev = (altera_avalon_jtag_uart_dev*) fd->dev; 
+    return altera_avalon_jtag_uart_read(&dev->state, buffer, space,
+  80efb8:	080f59c0 	call	80f59c <altera_avalon_jtag_uart_read>
+0080efd0 <altera_avalon_jtag_uart_write_fd>:
+altera_avalon_jtag_uart_write_fd(alt_fd* fd, const char* buffer, int space)
+    altera_avalon_jtag_uart_dev* dev = (altera_avalon_jtag_uart_dev*) fd->dev; 
+    return altera_avalon_jtag_uart_write(&dev->state, buffer, space,
+  80f018:	080f7bc0 	call	80f7bc <altera_avalon_jtag_uart_write>
+0080f030 <altera_avalon_jtag_uart_close_fd>:
+altera_avalon_jtag_uart_close_fd(alt_fd* fd)
+    altera_avalon_jtag_uart_dev* dev = (altera_avalon_jtag_uart_dev*) fd->dev; 
+    return altera_avalon_jtag_uart_close(&dev->state, fd->fd_flags);
+  80f068:	080f4400 	call	80f440 <altera_avalon_jtag_uart_close>
+0080f080 <altera_avalon_jtag_uart_ioctl_fd>:
+altera_avalon_jtag_uart_ioctl_fd(alt_fd* fd, int req, void* arg)
+    altera_avalon_jtag_uart_dev* dev = (altera_avalon_jtag_uart_dev*) fd->dev;
+    return altera_avalon_jtag_uart_ioctl(&dev->state, req, arg);
+  80f0bc:	080f4a80 	call	80f4a8 <altera_avalon_jtag_uart_ioctl>
+0080f0d4 <altera_avalon_jtag_uart_init>:
+void altera_avalon_jtag_uart_init(altera_avalon_jtag_uart_state* sp, 
+  alt_ic_isr_register(irq_controller_id, irq, altera_avalon_jtag_uart_irq, 
+  alt_irq_register(irq, sp, altera_avalon_jtag_uart_irq);
+  80f168:	1000040e 	bge	r2,zero,80f17c <altera_avalon_jtag_uart_init+0xa8>
+    &altera_avalon_jtag_uart_timeout, sp) < 0)
+0080f194 <altera_avalon_jtag_uart_irq>:
+static void altera_avalon_jtag_uart_irq(void* context)
+static void altera_avalon_jtag_uart_irq(void* context, alt_u32 id)
+  altera_avalon_jtag_uart_state* sp = (altera_avalon_jtag_uart_state*) context;
+  80f1d0:	10006d26 	beq	r2,zero,80f388 <altera_avalon_jtag_uart_irq+0x1f4>
+  80f1dc:	10003526 	beq	r2,zero,80f2b4 <altera_avalon_jtag_uart_irq+0x120>
+  80f208:	18801526 	beq	r3,r2,80f260 <altera_avalon_jtag_uart_irq+0xcc>
+  80f220:	10001126 	beq	r2,zero,80f268 <altera_avalon_jtag_uart_irq+0xd4>
+  80f25c:	003fe206 	br	80f1e8 <altera_avalon_jtag_uart_irq+0x54>
+  80f264:	00000106 	br	80f26c <altera_avalon_jtag_uart_irq+0xd8>
+        /* Post an event to notify jtag_uart_read that a character has been read */
+  80f274:	10000f26 	beq	r2,zero,80f2b4 <altera_avalon_jtag_uart_irq+0x120>
+  80f2bc:	103fbe26 	beq	r2,zero,80f1b8 <altera_avalon_jtag_uart_irq+0x24>
+  80f2cc:	00001406 	br	80f320 <altera_avalon_jtag_uart_irq+0x18c>
+        /* Post an event to notify jtag_uart_write that a character has been written */
+  80f324:	10000526 	beq	r2,zero,80f33c <altera_avalon_jtag_uart_irq+0x1a8>
+  80f338:	18bfe51e 	bne	r3,r2,80f2d0 <altera_avalon_jtag_uart_irq+0x13c>
+  80f340:	103f9d26 	beq	r2,zero,80f1b8 <altera_avalon_jtag_uart_irq+0x24>
+  80f384:	003f8c06 	br	80f1b8 <altera_avalon_jtag_uart_irq+0x24>
+0080f3a0 <altera_avalon_jtag_uart_timeout>:
+altera_avalon_jtag_uart_timeout(void* context) 
+  altera_avalon_jtag_uart_state* sp = (altera_avalon_jtag_uart_state *) context;
+  80f3d4:	10000b26 	beq	r2,zero,80f404 <altera_avalon_jtag_uart_timeout+0x64>
+  80f400:	00000a06 	br	80f42c <altera_avalon_jtag_uart_timeout+0x8c>
+  80f414:	10c00536 	bltu	r2,r3,80f42c <altera_avalon_jtag_uart_timeout+0x8c>
+0080f440 <altera_avalon_jtag_uart_close>:
+int altera_avalon_jtag_uart_close(altera_avalon_jtag_uart_state* sp, int flags)
+  80f454:	00000506 	br	80f46c <altera_avalon_jtag_uart_close+0x2c>
+  80f460:	10000226 	beq	r2,zero,80f46c <altera_avalon_jtag_uart_close+0x2c>
+  80f468:	00000b06 	br	80f498 <altera_avalon_jtag_uart_close+0x58>
+  80f47c:	18800526 	beq	r3,r2,80f494 <altera_avalon_jtag_uart_close+0x54>
+  80f490:	18bff136 	bltu	r3,r2,80f458 <altera_avalon_jtag_uart_close+0x18>
+0080f4a8 <altera_avalon_jtag_uart_ioctl>:
+altera_avalon_jtag_uart_ioctl(altera_avalon_jtag_uart_state* sp, int req,
+  80f4d0:	1000041e 	bne	r2,zero,80f4e4 <altera_avalon_jtag_uart_ioctl+0x3c>
+  80f4dc:	1000181e 	bne	r2,zero,80f540 <altera_avalon_jtag_uart_ioctl+0x98>
+  80f4e0:	00002906 	br	80f588 <altera_avalon_jtag_uart_ioctl+0xe0>
+  80f4f4:	18802126 	beq	r3,r2,80f57c <altera_avalon_jtag_uart_ioctl+0xd4>
+  80f50c:	1000061e 	bne	r2,zero,80f528 <altera_avalon_jtag_uart_ioctl+0x80>
+  80f51c:	18800226 	beq	r3,r2,80f528 <altera_avalon_jtag_uart_ioctl+0x80>
+  80f524:	00000206 	br	80f530 <altera_avalon_jtag_uart_ioctl+0x88>
+  80f53c:	00000f06 	br	80f57c <altera_avalon_jtag_uart_ioctl+0xd4>
+  80f550:	18800c26 	beq	r3,r2,80f584 <altera_avalon_jtag_uart_ioctl+0xdc>
+  80f578:	00000206 	br	80f584 <altera_avalon_jtag_uart_ioctl+0xdc>
+  80f580:	00000106 	br	80f588 <altera_avalon_jtag_uart_ioctl+0xe0>
+0080f59c <altera_avalon_jtag_uart_read>:
+altera_avalon_jtag_uart_read(altera_avalon_jtag_uart_state* sp, 
+  80f5c4:	00004706 	br	80f6e4 <altera_avalon_jtag_uart_read+0x148>
+  80f5e8:	18800536 	bltu	r3,r2,80f600 <altera_avalon_jtag_uart_read+0x64>
+  80f5fc:	00000406 	br	80f610 <altera_avalon_jtag_uart_read+0x74>
+  80f614:	10001e26 	beq	r2,zero,80f690 <altera_avalon_jtag_uart_read+0xf4>
+  80f620:	1880022e 	bgeu	r3,r2,80f62c <altera_avalon_jtag_uart_read+0x90>
+  80f688:	00bfcf16 	blt	zero,r2,80f5c8 <altera_avalon_jtag_uart_read+0x2c>
+  80f68c:	00000106 	br	80f694 <altera_avalon_jtag_uart_read+0xf8>
+  80f69c:	1880141e 	bne	r3,r2,80f6f0 <altera_avalon_jtag_uart_read+0x154>
+  80f6a8:	1000131e 	bne	r2,zero,80f6f8 <altera_avalon_jtag_uart_read+0x15c>
+  80f6bc:	1880051e 	bne	r3,r2,80f6d4 <altera_avalon_jtag_uart_read+0x138>
+  80f6d0:	18bff736 	bltu	r3,r2,80f6b0 <altera_avalon_jtag_uart_read+0x114>
+  80f6e0:	18800726 	beq	r3,r2,80f700 <altera_avalon_jtag_uart_read+0x164>
+  80f6e8:	00bfb716 	blt	zero,r2,80f5c8 <altera_avalon_jtag_uart_read+0x2c>
+  80f6ec:	00000506 	br	80f704 <altera_avalon_jtag_uart_read+0x168>
+  80f6f4:	00000306 	br	80f704 <altera_avalon_jtag_uart_read+0x168>
+  80f6fc:	00000106 	br	80f704 <altera_avalon_jtag_uart_read+0x168>
+  80f70c:	18801926 	beq	r3,r2,80f774 <altera_avalon_jtag_uart_read+0x1d8>
+  80f77c:	18800426 	beq	r3,r2,80f790 <altera_avalon_jtag_uart_read+0x1f4>
+  80f78c:	00000606 	br	80f7a8 <altera_avalon_jtag_uart_read+0x20c>
+  80f798:	10000226 	beq	r2,zero,80f7a4 <altera_avalon_jtag_uart_read+0x208>
+  80f7a0:	00000106 	br	80f7a8 <altera_avalon_jtag_uart_read+0x20c>
+0080f7bc <altera_avalon_jtag_uart_write>:
+altera_avalon_jtag_uart_write(altera_avalon_jtag_uart_state* sp, 
+  80f7e8:	00003706 	br	80f8c8 <altera_avalon_jtag_uart_write+0x10c>
+  80f80c:	1880062e 	bgeu	r3,r2,80f828 <altera_avalon_jtag_uart_write+0x6c>
+  80f824:	00000b06 	br	80f854 <altera_avalon_jtag_uart_write+0x98>
+  80f82c:	10000526 	beq	r2,zero,80f844 <altera_avalon_jtag_uart_write+0x88>
+  80f840:	00000406 	br	80f854 <altera_avalon_jtag_uart_write+0x98>
+  80f858:	10001e26 	beq	r2,zero,80f8d4 <altera_avalon_jtag_uart_write+0x118>
+  80f864:	1880022e 	bgeu	r3,r2,80f870 <altera_avalon_jtag_uart_write+0xb4>
+  80f8cc:	00bfc716 	blt	zero,r2,80f7ec <altera_avalon_jtag_uart_write+0x30>
+  80f8d0:	00000106 	br	80f8d8 <altera_avalon_jtag_uart_write+0x11c>
+  80f940:	0080100e 	bge	zero,r2,80f984 <altera_avalon_jtag_uart_write+0x1c8>
+  80f94c:	1000101e 	bne	r2,zero,80f990 <altera_avalon_jtag_uart_write+0x1d4>
+  80f960:	1880051e 	bne	r3,r2,80f978 <altera_avalon_jtag_uart_write+0x1bc>
+  80f974:	18bff736 	bltu	r3,r2,80f954 <altera_avalon_jtag_uart_write+0x198>
+  80f980:	1000051e 	bne	r2,zero,80f998 <altera_avalon_jtag_uart_write+0x1dc>
+  80f988:	00bfcf16 	blt	zero,r2,80f8c8 <altera_avalon_jtag_uart_write+0x10c>
+  80f98c:	00000306 	br	80f99c <altera_avalon_jtag_uart_write+0x1e0>
+  80f994:	00000106 	br	80f99c <altera_avalon_jtag_uart_write+0x1e0>
+  80f9a4:	18800426 	beq	r3,r2,80f9b8 <altera_avalon_jtag_uart_write+0x1fc>
+  80f9b4:	00000606 	br	80f9d0 <altera_avalon_jtag_uart_write+0x214>
+  80f9c0:	10000226 	beq	r2,zero,80f9cc <altera_avalon_jtag_uart_write+0x210>
+  80f9c8:	00000106 	br	80f9d0 <altera_avalon_jtag_uart_write+0x214>

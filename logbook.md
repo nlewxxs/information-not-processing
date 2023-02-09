@@ -472,6 +472,8 @@ if __name__ == '__main__':
 Fully working:
 [![asciicast](https://asciinema.org/a/00fZlZct5aZ7zJvEdsYN79uJL.svg)](https://asciinema.org/a/00fZlZct5aZ7zJvEdsYN79uJL)
 
+### readline() gobbles the input from the nios2-terminal so it doesn't actually reach the controller
+
 # Appendix
 ---
 

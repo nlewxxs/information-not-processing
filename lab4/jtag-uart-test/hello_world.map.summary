@@ -1,0 +1,16 @@
+Analysis & Synthesis Status : Successful - Sat Jan 30 17:38:01 2021
+Quartus Prime Version : 20.1.1 Build 720 11/11/2020 SJ Lite Edition
+Revision Name : hello_world
+Top-level Entity Name : hello_world
+Family : MAX 10
+Total logic elements : 4,514
+    Total combinational functions : 3,621
+    Dedicated logic registers : 2,656
+Total registers : 2656
+Total pins : 47
+Total virtual pins : 0
+Total memory bits : 64,896
+Embedded Multiplier 9-bit elements : 0
+Total PLLs : 0
+UFM blocks : 0
+ADC blocks : 0
