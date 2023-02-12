@@ -1,6 +1,17 @@
 # Information Processing Labs
 #### Nik Lewis, 19/01/2023
 
+## Contents:
+
+* [Lab 1](#lab1)
+* [Lab 2](#lab2)
+* [Lab 3](#lab3)
+* [Lab 3 Challenge: Optimizing FIR](#lab3challenge)
+* [Lab 4](#lab4)
+* [Latest: Lab 4 Challenge 1 Demo](#lab4challenge1demo)
+
+<div id="lab1"/>
+
 # Lab 1
 
 Basic hex to seg display.
@@ -46,6 +57,8 @@ Upon inspection of the compilation report, we see that there are:
 * 66 paths, because ( 4 * 7 ) + ( 4 * 7 ) + ( 2 * 4 ) + ( 1 * 2 ) = 66
 
 > This is just based off the diagram, it doesn't fully make sense to me. which of the last ones are unconstrained? what is going on here?
+
+<div id="lab2"/>
 
 # Lab 2
 
@@ -112,6 +125,8 @@ Both from the `lab2/software/hello_sw` directory.
 assign LEDR[0] = SW[0];
 ```
 would accomplish this. This is in the manual but has been omitted for our labs.
+
+<div id="lab3"/>
 
 # Lab 3
 
@@ -269,6 +284,8 @@ With transfer function:
 
 ![transferfunc](images/matlabfir.png)
 
+<div id="lab3challenge"/>
+
 ## Challenge: Optimizing the FIR using quantization
 
 ### Experimenting with Quantizing the filter:
@@ -371,6 +388,8 @@ around 5dp the transfer function is almost indistinguishable.
 can see evidence of it working:
 
 [![asciicast](https://asciinema.org/a/ZPjhEmmEe0faKd05vbNGKYROj.svg)](https://asciinema.org/a/ZPjhEmmEe0faKd05vbNGKYROj)
+
+<div id="lab4"/>
 
 # Lab 4
 
@@ -569,6 +588,8 @@ This setup means everything can be done concurrently and the program is much fas
 |Function|filter data|use raw data|toggle y-value output|update coefficients|neatly quit terminal|
 
 ---
+<div id="lab4challenge1demo"/>
+
 
 ## Lab 4 Challenge 1 Demonstration
 
