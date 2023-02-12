@@ -390,13 +390,23 @@ First problem is that we are unable to load the task1 test code onto the lab3 pr
 Verify failed between address 0x800000 and 0x80FFFF
 Leaving target processor paused
 ```
-Which indicates that there is not enough memory onboard the DE10 to store our program. We solve this by building our Lab3 design on top of the Lab4 qsys file, which has an SRAM component - NO. ADDED MORE MEM IN FPGA, SHOW SPECS ETC AND CHANGE IN QSYS. REGEN BSP AND NEW PROJECT
+Which indicates that there is not enough memory onboard the DE10 to store our program. One option is to re-build our Lab3 design on top of the Lab4 qsys file, which has an SRAM component.
 
-no small library shit (image)
+However, the SRAM component is not actually required for the design, and need a PLL to go with it - all extra complications.
 
-added sys clock ? ns why
+#### Solution: Increase amount of On-chip Memory
 
-accel was lagging with uart, testing using this:
+Having looked up the specifications of the `DE10` board, we found that there is actually a lot more memory available than we were previously using. We updated the onchip memory to `131072` bytes which was enough to load the program (by the end of challenge1 the program was still only around 91kb). Aside from this, the only other hardware change was to add the `sys_clk_timer` component, then recompile and regenerate the BSP.
+
+#### Used full-size `hello_world` template instead of `hello_world_small`.
+
+This was something that was necessary for the uart code to run but was kindly not mentioned in the instructions. Possibly because the assumption was that we would build on top of lab4.
+
+#### Noticed that once the program was running, the acceleromter was being very slow and lagging a lot.
+
+We conjectured that it may be the `getc` function (reading from the buffer) causing the program to hang when there is no character in the `jtag_uart` stream.
+
+We tested this by removing the character reading, and printing a count:
 
 ```c
 while(1) {
@@ -472,7 +482,101 @@ if __name__ == '__main__':
 Fully working:
 [![asciicast](https://asciinema.org/a/00fZlZct5aZ7zJvEdsYN79uJL.svg)](https://asciinema.org/a/00fZlZct5aZ7zJvEdsYN79uJL)
 
-### readline() gobbles the input from the nios2-terminal so it doesn't actually reach the controller
+---
+
+## Challenge 1: Terminal control with option to change coefficients
+
+For the previous task it was sufficient to have the host communicating to the DE10 but not displaying any data in return, as long as the filtering could be observed on the LEDs.
+
+Starting from the challenge however, we are going to need bidirectional communication. This presents a problem because `pexpect.popen_spawn.PopenSpawn` instances are difficult to read output from (at least I couldn't figure it out) but can read at very high speeds, and `subprocess.run()` instances are easy to send input to and receive output from, but this happens at an unacceptably slow rate in comparison to the frequency of accelerometer updates.
+
+---
+
+#### Design Decision: Using `subprocess.Popen()` instead of `subprocess.run()` instance
+
+We initiate the nios2terminal using:
+```python
+nios = subprocess.Popen('nios2-terminal', shell=True, executable='/bin/bash', stdout=subprocess.PIPE, stdin=subprocess.PIPE, preexec_fn=os.setsid)
+```
+Where we have created two separate PIPES for `stdout` and `stdin`. This prevents any keyboard inputs being treated as outputs in the terminal.
+
+> Note: the preexec_fn=os.setsid is required to kill the session when the program is terminated. This helps prevent a 'Another application is currently using the UART connection' error, as closing the python script does not always close the background nios2terminal. See full code for the kill signal at the end of main() function.
+
+This lets us read using:
+```python
+reading = nios.stdout.readline().decode('utf-8')
+```
+
+And send commands using using:
+```python
+nios.stdin.write(cmd.encode('utf-8'))
+nios.stdin.flush()  # stdin must be flushed otherwise commands are not sent
+```
+---
+
+#### Design Decision: Assume that no more than 49 coefficients will be passed to the program.
+
+The program will take an input of n coefficients, and we assume this number will be less than 49. All remaining coefficients will be set to 0.
+
+So for example, sending coefficients `0.443, 1.225, -3.22` will create a 3-Tap filter, zeroing the remaining coefficients.
+
+This is reflected in the c code by using `calloc` to allocate memory to an array `new_coeffs` each time the coefficients are being updated.
+
+```c
+float *new_coeffs = calloc(49, sizeof(char));
+```
+After transmission, coefficients are updated like so:
+
+```c
+for(int newc = 0; newc < 50; newc++){
+	fir_coeffs[newc] = new_coeffs[newc];
+	int_coeffs[newc] = (alt_32)round(new_coeffs[newc]*100000);
+}
+```
+---
+#### Design Decision: Coefficients are sent character by character, with commas as delimiters
+
+This is a workaround for UART only being able to send single characters.
+
+Spaces are stripped from the input and all coefficients are sent character by character. C code then handles code as required. See terminal recording for clear demonstration.
+
+Basic input validation is done on the host side but it is assumed that the program will be used correctly.
+
+---
+
+#### Design Decision: Using `float` for the coefficients on the board side
+
+Optimal FIR quantization was found to be at 5 decimal places, so there is no need in storing coefficients as doubles.
+
+---
+
+#### Design Decision: Threads used for concurrent reading/writing
+
+The host has 3 threads running during most parts of the execution:
+
+* Main thread - processing inputs, calling functions, and general program management etc
+* `readings` thread - constantly reading from the `stdout` buffer of the nios subprocess. This is to prevent the buffer from filling up - otherwise we will have to sift through hundreds of outputs before we read the one we want.
+* `inputs` thread - constantly eating up input from the user, using the `readchar` library. This is also nice because it prevents the input from being shown up on the screen whilst using the terminal. Allows faster response
+
+This setup means everything can be done concurrently and the program is much faster.
+
+---
+
+#### Design Decision: Characters reserved for input
+
+|Character|`1`|`0`|`d`|`c`|`q`|
+|:----:|:---:|:---:|:---:|:---:|:--:|
+|Function|filter data|use raw data|toggle y-value output|update coefficients|neatly quit terminal|
+
+---
+
+## Lab 4 Challenge 1 Demonstration
+
+[![asciicast](https://asciinema.org/a/pZrg3MyQCOFq34SEI4vdxHn6H.svg)](https://asciinema.org/a/pZrg3MyQCOFq34SEI4vdxHn6H)
+
+We have used a ridiculous coefficient to show that the coefficients really are being updated. You can see that the filtered and raw values are similar before the update, but the filtered y-value jumps around after updating coefficients.
+
+The terminal session only displays the first 5 coefficients and the last coefficient so as to avoid excessive verbose.
 
 # Appendix
 ---
@@ -707,3 +811,26 @@ while(1) {
     	}
     }
 ```
+
+#### Fix for `printf` causing undefined behaviour when printing to nios2-terminal
+
+Use `fprintf(fp, string)` whenever printing a character array. Otherwise, statement will sometimes print and sometimes not print, completely randomly and 50/50.
+
+This is weird because in the `HAL` settings the `jtag_uart` is set as the default `stdin` and `stdout`, so it should still work. `printf` has no problems when it's just a string, but when the string is being formatted then the undefined behaviour occurs.
+
+#### Fix for `UnicodeDecodeError` when opening nios2-terminal through a subprocess
+
+The nios2 terminal sends some funky characters sometimes that `utf-8` has trouble decoding. To fix this, run
+```python
+nios.stdout.readline().decode('iso-8859-1')
+```
+3 times to remove the nios2 welcome message. Decode error does not happen with `iso-8859-1` for whatever reason.
+
+Also add a
+```python
+try:
+	# decode
+except UnicodeDecodeError:
+	continue
+```
+inside the decoding block.
