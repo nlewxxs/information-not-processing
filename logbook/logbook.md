@@ -491,9 +491,13 @@ client_socket.close()
 
 Output from this TCP connection:
 Server-side:
-![l5p5](./images/l5p5.PNG)
+
+![l5p5](./images/l5p5.png)
+
 Local-machine side:
-![l5p6](./images/l5p6.PNG)
+
+![l5p6](./images/l5p6.png)
+
 The first message is when tcp_server.py running from python script in EC2.
 The second message is when tcp_server.py running as a service in EC2 with the terminal closed.
 The third message is when the service is killed, tcp client cannot reach the server.
@@ -527,7 +531,9 @@ to be executed.
 This ensures that the TCP service is now running in the background as a service even after the terminal is closed until the current server is killed `~$ sudo kill -9 (process id/ found using ~$ps -ef)`
 
 process id:
-![l5p7](./images/l5p7.PNG)
+
+![l5p7](./images/l5p7.png)
+
 > It seems like the ps -ef instruction won't show the full execution location. The second last one on the list should be executing at the location `/user/bin/python3 /home/ubuntu/tcpserver.py` as in the service file, but due to limitation of word space, it cannot be shown fully.
 
 
