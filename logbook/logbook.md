@@ -1,7 +1,17 @@
+<div id="top"/>
+
 # Information Processing Lab
 Steven Shao, 27/01/2023
 
-# Lab 1
+* [Lab 1](#lab1)
+* [Lab 2](#lab2)
+* [Lab 3](#lab3)
+* [Lab 5](#lab5)
+* [Lab 6](#lab6)
+
+<div id="lab1"/>
+
+# [Lab 1](#top)
 ## Task 0
 Nothing special to talk about for the first part. Mainly for us to install Quartus.
 
@@ -40,7 +50,10 @@ I mainly changed the top-level file to include 10-bit input SW and three 7-bit o
 The mapping:
 ![RTL_2](./images/RTL_2.png)
 
-# Lab 2
+
+<div id="lab2"/>
+
+# [Lab 2](#top)
 ## Task 1 Design a NIOS II System
 ![NIOS1](./images/nios1.png)
 ![NIOS2](./images/nios2.png)
@@ -112,7 +125,10 @@ The LED is lighting up when the button is pressed:
 
 ![LED NIOS](./images/LED%20NIOS.jpg)
 
-# Lab 3
+
+<div id="lab3"/>
+
+# [Lab 3](#top)
 ## Task 1: Interface an accelerometer to a NIOS II system
 
 What we did in this part is two create a system that include an extra Accelerometer SPI module that acts as a slave to the data master of the CPU. It gives the accelerometer's data as the CPU requires it.
@@ -195,24 +211,24 @@ Use `alt_printf("raw data: %x\n", x_read);` , we can print on the host terminal 
 
 ## Task 3: Implement an FIR filter to process the data
 
+A FIR filter can only be discrete due to data being processed at intervals determined by clock cycles and instructions, so we can model the discrete filter using difference equation.
+
+y[n] = h[n]*x[n]    `(* means convolution)`
+
+
+y[n] = $\sum_{k=0}^{N} h[k]x[n-k]$, where N is the tap numbers
+
 ### 5-Tap filter: Create a moving average of every 5 inputs.
 
-Within the while loop, we created the following code to act as a query. The input array updates the value by dropping the oldest value and adding the new value from x_read.
+Within the while loop, we created the following code to act as a query. The input array updates the value by shifting the old values to the right and adding the new reading at the beginning
 
 ```c
-alt_32 input[N+1];
-if (count <= N){
-        	input[count] = x_read;
-        	count += 1;
-        }
-
-        if (count==N + 1){
-        	for (int i = 0; i< N; i++){
-        		input[i] = input[i+1];
-        	}
-
-        	input[N] = x_read;
-        }
+void update_xread(alt_32* x, alt_32* x_read, int taps){
+    for (int i = taps-1; i>0; i--){
+        x[i] = x[i-1];
+    }
+    x[0] = *x_read;
+}
 ```
 In the filter function, every element in the `input array` is converted into float number and multiply with the element in the `COEFF array` and add all of them into a `sum`. The sum is the converted into `alt_32 type output`. 
 
@@ -220,24 +236,12 @@ In the filter function, every element in the `input array` is converted into flo
 
 ```c
 while (1) {
-    	alt_32 input[N+1];
+    	alt_32 input[N];
         alt_up_accelerometer_spi_read_x_axis(acc_dev, & x_read); 
         // read x value from the accelerometer
 
+        update_xread(input, x_read, N+1);
         
-        if (count <= N){
-        	input[count] = x_read;
-        	count += 1;
-        }
-
-        if (count==N + 1){
-        	for (int i = 0; i< N; i++){
-        		input[i] = input[i+1];
-        	}
-        	input[N] = x_read;
-        }
-
-
         alt_32 output;
 		output = filter(input);
         alt_printf("raw data: %x\n", output);
@@ -247,7 +251,6 @@ while (1) {
         // convert_read function use pulse width modulation to create a smooth effect on the LEDs
 
     }
-}
 ```
 ### From 5 tab filter to N tab filter
 The code is the same as previous example. Simply change the pre-defined value of N and COEFF array into the new values.
@@ -288,8 +291,12 @@ The coeffients are then used in the COEFF array.
 
 For N-tap Filter, just change the filter order to N-1.
 
+> Filter order = number of taps-1 because: The filter order of a digital filter is defined as the highest power of the denominator polynomial in the transfer function of the filter, which defines the complexity of the filter, while the number of coefficients in the denominator polynomial is called the "taps" of the filter. 
+
+>The filter order is equal to the number of taps minus one, because the denominator polynomial is of order n when it has n+1 coefficients.
+
 ### Challenge: Optimize the FIR
-As the number of taps increases, the time taken for the execution of the filtering function increases linearly because NIOS II does not have support for floating point operation.As such, the sampling rate of the accelerometer decreases. 
+__As the number of taps increases, the time taken for the execution of the filtering function increases linearly because NIOS II does not have support for floating point operation.As such, the sampling rate of the accelerometer decreases.__
 
 One way to increase the performance of the system is to consider converting the floating-point operations to fixed point ones.
 
@@ -361,7 +368,11 @@ Where `%llu` is for `long long unsigned` integers, which is exactly what we have
 
 > NOTE: For whatever reason, this prevents the LEDs from being updated. The accelerometer is still being read from - printing the `y` value you will see it changing as you tilt the board exactly as before. Not sure why this is happening, don't care.
 
-# Lab 5
+> `alt_timestamp_start()` mess up with `timer_init(sys_timer_isr)`. The latter one interrupts the main function and convert x_read into LED readings at certain interval.
+
+<div id="lab5"/>
+
+# [Lab 5](#top)
 ### Installing an EC2 instance
 EC2 stands for Elastic Compute Cloud. It gives you access to a virtual computer on the cloud. We can run many useful applications, including your own programs, on your EC2 instance.
 
@@ -520,7 +531,53 @@ process id:
 > It seems like the ps -ef instruction won't show the full execution location. The second last one on the list should be executing at the location `/user/bin/python3 /home/ubuntu/tcpserver.py` as in the service file, but due to limitation of word space, it cannot be shown fully.
 
 
-# Lab 6
+### Challenge 1:
+In this task, we are trying to measure the average RTT time for 500 transmissions. I modified the code on the client side to give a moving average of the RTT time.
+
+```py
+import socket
+import time
+print("We're in tcp client...");
+#the server name and port client wishes to access
+server_name = '3.8.190.35' #Public IPv4 address of the instance
+#'52.205.252.164'
+server_port = 12000
+
+counter = 0
+totalTime = 0
+while (counter < 500):
+    #create a TCP client socket
+    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    #Set up a TCP connection with the server
+    #connection_socket will be assigned to this client on the server side
+    client_socket.connect((server_name, server_port))
+    
+    msg = input("Enter an integer: ");
+    start = time.time() #starts timer right before sending
+        #send the message to the TCP server
+    client_socket.send(msg.encode())
+        #return values from the server
+    msg = client_socket.recv(1024)
+    stop = time.time() #stops timer right after receiving
+    print(msg.decode())
+
+    
+    rtt = stop - start #logs time for this round trip
+    print("Time in seconds for this Round Trip: " + str(rtt))
+
+    totalTime += rtt
+    counter += 1
+
+    print("Moving average: " + str(totalTime/counter))
+    client_socket.close()
+```
+
+In the client side, I use `time` library to measure the start and end time of each transmission (`client_socket.send` and `client socket.received`). Add the time to total time and divded it through number of transmissions. The socket is closed and reconnected in each iteration, because at the server side, it only accepts one transmission at a time.
+
+
+<div id="lab6"/>
+
+# [Lab 6](#top)
  In this lab, we will learn to write Python code to connect to a DynamoDB instance on AWS.
 
 Boto3 is the AWS SDK for Python. It makes it easy to integrate your Python application, library, or script 
