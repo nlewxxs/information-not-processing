@@ -12,6 +12,16 @@ Steven Shao, 27/01/2023
 <div id="lab1"/>
 
 # [Lab 1](#top)
+
+### FPGA and ASIC
+
+FPGA stands for Field-Programmable Gate Array. An FPGA is a type of integrated circuit that is designed to be programmed and reprogrammed after manufacturing. It consists of a matrix of programmable logic blocks and programmable interconnects, which can be used to implement various digital circuits and systems. 
+
+The main difference between an FPGA and an ASIC is their flexibility and cost. FPGAs are more flexible than ASICs because they can be reprogrammed, and are often used in prototyping and development stages of a project. ASICs are more specialized than FPGAs and offer better performance and lower cost when produced in high volume. 
+
+
+
+----
 ## Task 0
 Nothing special to talk about for the first part. Mainly for us to install Quartus.
 
@@ -53,7 +63,35 @@ The mapping:
 
 <div id="lab2"/>
 
+
 # [Lab 2](#top)
+
+### What is BSP?
+BSP in Eclipse refers to a Board Support Package, which is a set of software components that provides hardware-specific functionality for embedded systems development.
+
+A Board Support Package typically includes the following components:
+
+Device drivers: Software components that provide an interface to the hardware devices and peripherals, such as timers, interrupts, and communication ports.
+
+Libraries: Pre-built software libraries that provide commonly used functionality, such as math operations or networking.
+
+Configuration files: Files that specify the settings and parameters for the hardware and software components.
+
+Build scripts: Scripts that automate the build process and generate the necessary executable code.
+
+### JTAG and UART
+JTAG stands for Joint Test Action Group, and it is a protocol that provides a standardized way to test and debug electronic systems, including FPGAs and microprocessors. JTAG is used to access the internal circuitry of a device and provides the ability to perform boundary scan tests, flash programming, and real-time debugging.
+
+UART stands for Universal Asynchronous Receiver/Transmitter, and it is a protocol that is commonly used for serial communication between electronic devices. UART is used to transmit and receive data serially, one bit at a time, and it provides a simple and reliable way to communicate between devices.
+
+### Platform Designer
+Platform Designer is a design tool in Quartus Prime that allows users to create custom digital systems using pre-built IP blocks and interconnects. It provides a graphical interface for selecting and configuring IP blocks, and advanced features for optimizing system performance and design.
+
+### Base address ?
+When developing software for embedded systems, it is common to use hardware devices or peripherals, such as memory-mapped registers, to interface with the hardware of the system. These devices typically have a fixed physical address in the memory space of the system, known as a "base address".
+
+--------
+
 ## Task 1 Design a NIOS II System
 ![NIOS1](./images/nios1.png)
 ![NIOS2](./images/nios2.png)
@@ -584,6 +622,19 @@ In the client side, I use `time` library to measure the start and end time of ea
 <div id="lab6"/>
 
 # [Lab 6](#top)
+
+### Difference between Relational Databases and NoSQL database
+
+In summary, the main difference between relational databases and NoSQL databases is in their data model and how they store and manage data. Relational databases are structured, highly normalized, and enforce relationships between tables, while NoSQL databases are designed for unstructured or semi-structured data and provide flexibility and scalability. 
+
+### DynamoDB and Cassandra
+DynamoDB and Cassandra are both highly scalable NoSQL databases, but DynamoDB is a document-based database that is fully managed by AWS, while Cassandra is an open-source column-family database that is designed to handle large volumes of data across multiple nodes.
+
+### JSON
+In JSON, data is represented as a collection of key-value pairs or ordered lists. The key-value pairs are separated by a colon (:), and each pair is separated by a comma (,). The keys in a JSON object must be strings, while the values can be strings, numbers, booleans, null, objects, or arrays. JSON objects are often referred to as "JSON dictionaries" or "JSON maps" because they use a similar key-value structure to dictionaries in programming languages.
+
+--------
+
  In this lab, we will learn to write Python code to connect to a DynamoDB instance on AWS.
 
 Boto3 is the AWS SDK for Python. It makes it easy to integrate your Python application, library, or script 
