@@ -42,15 +42,11 @@ server_port = 12000
 client_socket.connect((server_name, server_port))
 
 
-
-# Load the image
-image = pygame.image.load("image.jpg")
-
 # Change the size of the image
-scaled_image_right = pygame.transform.scale(image, (50, 50))
-scaled_image_up =pygame.transform.rotate(scaled_image_right,90)
-scaled_image_left =pygame.transform.rotate(scaled_image_up,90)
-scaled_image_down =pygame.transform.rotate(scaled_image_left,90)
+scaled_image_right = pygame.transform.scale(pygame.image.load("images/rightArrow.png"), (50, 50))
+scaled_image_up =pygame.transform.rotate(pygame.image.load("images/upArrow.png"), (50, 50))
+scaled_image_left =pygame.transform.rotate(pygame.image.load("images/leftArrow.png"), (50, 50))
+scaled_image_down =pygame.transform.rotate(pygame.image.load("images/downArrow.png"), (50, 50))
 
 images = [
     (scaled_image_left, pygame.Rect(0, 0, 50, 50)),
@@ -71,7 +67,7 @@ tiny_font = pygame.font.Font(pygame.font.get_default_font(), TINY_FONT_SIZE)
 keys = [{'rect': pygame.Rect(200, 500, 80, 80), 'color1': RED, 'color2': (180, 0, 0), 'key': pygame.K_1},    
         {'rect': pygame.Rect(400, 500, 80, 80), 'color1': GREEN, 'color2': (0, 180, 0), 'key': pygame.K_2},    
         {'rect': pygame.Rect(600, 500, 80, 80), 'color1': BLUE, 'color2': (0, 0, 180), 'key': pygame.K_3},    
-        {'rect': pygame.Rect(800, 500, 80, 80), 'color1': (255, 255, 0), 'color2': (180, 180, 0), 'key': pygame.K_4},]
+        {'rect': pygame.Rect(800, 500, 80, 80), 'color1': YELLOW, 'color2': (180, 180, 0), 'key': pygame.K_4},]
 
 # Define levels
 # 2/3 level are not implemented yet
