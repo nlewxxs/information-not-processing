@@ -1,6 +1,0 @@
-17:58:05 **** Incremental Build of configuration Nios II for project hello_world_bsp ****
-make all 
-make: Nothing to be done for 'all'.
-
-17:58:07 Build Finished (took 1s.294ms)
-
