@@ -30,12 +30,11 @@ TINY_FONT_SIZE = 20
 Leave = False
 
 ### TCP settings
-# Set up the TCP client socketg
+# Set up the TCP client socket
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 #the server name and port client wishes to access
 server_name = '54.210.203.6'
 server_port = 12000
-
 client_socket.connect((server_name, server_port))
 
 
@@ -133,71 +132,74 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 def receive():
     # Wait for start signal from server
     global in_game
-    while not in_game and not Leave:
-        global full_ready, is_player1, is_player2, is_player1_ready, is_player2_ready
-        global connected, ready_num, player_num, level_selected, start1, start2
-        #print(7)
-        data = client_socket.recv(1024).decode()
-        if data == "fullready":
-            full_ready = True
+    while not Leave:
+       
+            global full_ready, is_player1, is_player2, is_player1_ready, is_player2_ready
+            global connected, ready_num, player_num, level_selected, start1, start2, current_level
+            global P1Score, P2Score
+            #print(7)
+            data = client_socket.recv(1024).decode()
+            print(data)
+            if data == "fullready":
+                full_ready = True
 
-        if data == "start":
-            in_game = True
-            #connected = True
-
-        elif data.startswith("player"):
-            player_num = int(data.split()[1])
-            print(f"hahahha{player_num}")
-            if player_num == 1:
-                is_player1 = True
-                #is_player2 = False
-                #client_socket.send("Ready 1")
-                connected = True
-            else:
-                #is_player1 = False
-                is_player2 = True
-                #client_socket.send("Ready 2")
-                connected = True
-
-        elif data.startswith("ready"):
-            ready_num = int(data.split()[1])
-            if ready_num == 1:
-                is_player1_ready = True
-                #client_socket.send("Ready 1")
+            if data == "start":
+                in_game = True
                 #connected = True
-            else:
-                is_player2_ready = True
-                #client_socket.send("Ready 2")
-                #connected = True
-        elif data.startswith("levelreceive"):
-            start_num = int(data.split()[1])
-            print("receive levelreceive")
-            if start_num == 1:
-                start1 = True   # -------------------need to start from here, start1 and 2 should determined by sending signals
-            elif start_num == 2:
-                start2 = True
 
-        elif data == "quit":
-            print("receive quit")
-            break
+            elif data.startswith("player"):
+                player_num = int(data.split()[1])
+                print(f"hahahha{player_num}")
+                if player_num == 1:
+                    is_player1 = True
+                    #is_player2 = False
+                    #client_socket.send("Ready 1")
+                    connected = True
+                else:
+                    #is_player1 = False
+                    is_player2 = True
+                    #client_socket.send("Ready 2")
+                    connected = True
 
-# Define a function to receive data from the server
-def receive_score():
-    global other_player_score
-    while in_game and not Leave:
-        print("getscore")
-        client_socket.send("get_score".encode())
-        time.sleep(0.5)
-        data = client_socket.recv(1024).decode()
-        
-        if data.isdigit():
-            other_player_score = int(data)
-        
-        elif data == "quit":
-            print("receive quit")
-            break
+            elif data.startswith("ready"):
+                ready_num = int(data.split()[1])
+                if ready_num == 1:
+                    is_player1_ready = True
+                    print("received player1 ready")
+                    #client_socket.send("Ready 1")
+                    #connected = True
+                else:
+                    is_player2_ready = True
+                    print("received player2 ready")
+                    #client_socket.send("Ready 2")
+                    #connected = True
+            elif data.startswith("levelreceive"):
+                start_num = int(data.split()[1])
+                print("receive levelreceive")
+                if start_num == 1:
+                    start1 = True   # -------------------need to start from here, start1 and 2 should determined by sending signals
+                elif start_num == 2:
+                    start2 = True
+            
+            elif data.startswith("level"):
+                    print("recievedlevel")
+                    current_level = int(data.split()[1])
+                    client_socket.send("LevelS2".encode())
+                    level_selected = True
 
-    #client_socket.send("quit".encode())
+            elif data.isdigit():
+                if is_player1:
+                    P2Score = int(data)
+                    print(P2Score)
+                    print(" ")
+                elif is_player2:
+                    P1Score = int(data)
+                    print(P1Score)
+                    print(" ")
+
+            elif data == "quit":
+                print("receive quit")
+                break
 
 
 connected = False
@@ -209,15 +211,23 @@ while True:
     game_over = False
     in_game = False
     full_ready = False
+    
     is_player1_ready = False
     is_player2_ready = False
     start1 = False
     start2 = False
+    
     level_selected = False
     current_level = 0
     LevelS1 = False
     LevelS2 = False
     #start_game = False
+
+    score = 0
+    P1Score = 0
+    P2Score = 0
+    oldscore = 0
+    other_player_score = 0
 
     # Start the receive data thread
     receive_thread = threading.Thread(target=receive)
@@ -324,24 +334,16 @@ while True:
                         current_level += 1
                         if current_level >= len(levels):
                             current_level = 0     
-        else:
-            data = client_socket.recv(1024).decode()
-            if data.startswith("level"):
-                print("recievedlevel")
-                current_level = int(data.split()[1])
-                client_socket.send("LevelS2".encode())
-                level_selected = True
-                #time.sleep(0.1)
-
+        
         pygame.display.update()
         clock.tick(60)
 
-    while level_selected and not in_game:
-        print("4")
+    while not in_game:
+        #print("4")
         screen.fill(BLACK)
         draw_text('Wait for start', big_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
         if start1 and start2:
-            print("send FullStart")
+            #print("send FullStart")
             client_socket.send("FullStart".encode())
         pygame.display.update()
                 
@@ -349,9 +351,7 @@ while True:
     # Load level and start game
     map_rect = load_level(levels[current_level])
     combo = 1
-    score = 0
-    oldscore = 0
-    other_player_score = 0
+    
     messages = []
 
     clock = pygame.time.Clock()
@@ -360,15 +360,11 @@ while True:
     
 
     while in_game:
-
-        # Start the receive score thread
-        receive_score_thread = threading.Thread(target=receive_score)
-        #receive_thread.setDaemon(True)
-        receive_score_thread.start()
-
-        print("4")
+        
+        
         screen.fill(BLACK)
-
+        
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 Leave = True
@@ -434,11 +430,18 @@ while True:
             myscore = score
             #send the message to the TCP server
             
-            client_socket.send(str(myscore).encode())
+            if is_player1:                
+                client_socket.send(("1Score " + str(myscore)).encode())
+            elif is_player2:
+                client_socket.send(("2Score " + str(myscore)).encode())
 
+        if is_player1:
+            othertext = tiny_font.render(f"Others Score: {P2Score}", True,"white")
+            screen.blit(othertext,(600,0))
         
-        othertext = tiny_font.render(f"Others Score: {other_player_score}", True,"white")
-        screen.blit(othertext,(600,0))
+        if is_player2:
+            othertext = tiny_font.render(f"Others Score: {P1Score}", True,"white")
+            screen.blit(othertext,(600,0))
         
 
         # Draw combo and score text
@@ -488,22 +491,6 @@ while True:
                     mixer.music.stop()
                     game_over = False
                     break
-                elif event.key == pygame.K_1:
-                    game_over = False
-                    print(in_game)
-                    print('full_ready:', full_ready)
-                    print('is_player1:', is_player1)
-                    print('is_player2:', is_player2)
-                    print('is_player1_ready:', is_player1_ready)
-                    print('is_player2_ready:', is_player2_ready)
-                    print('start1:', start1)
-                    print('start2:', start2)
-                    print('connected:', connected)
-                    print('level_selected:', level_selected)
-                    print('current_level:', current_level)
-                    print('LevelS1:', LevelS1)
-                    print('LevelS2:', LevelS2)
-
                     
         if not game_over:
             break
