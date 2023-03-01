@@ -43,10 +43,11 @@ client_socket.connect((server_name, server_port))
 
 
 # Change the size of the image
-scaled_image_right = pygame.transform.scale(pygame.image.load("images/rightArrow.png"), (50, 50))
-scaled_image_up =pygame.transform.rotate(pygame.image.load("images/upArrow.png"), (50, 50))
-scaled_image_left =pygame.transform.rotate(pygame.image.load("images/leftArrow.png"), (50, 50))
-scaled_image_down =pygame.transform.rotate(pygame.image.load("images/downArrow.png"), (50, 50))
+scaled_image_left = pygame.transform.scale(pygame.image.load("./images/redArrow.png"), (50, 50))
+scaled_image_up =pygame.transform.scale(pygame.image.load("./images/greenArrow.png"), (50, 50))
+scaled_image_right =pygame.transform.scale(pygame.image.load("./images/yellowArrow.png"), (50, 50))
+scaled_image_down =pygame.transform.scale(pygame.image.load("./images/blueArrow.png"), (50, 50))
+background_image =pygame.transform.scale(pygame.image.load("./images/sunsetDriveBackdrop.png"), (SCREEN_WIDTH, SCREEN_HEIGHT))
 
 images = [
     (scaled_image_left, pygame.Rect(0, 0, 50, 50)),
@@ -54,6 +55,8 @@ images = [
     (scaled_image_down, pygame.Rect(0, 0, 50, 50)),
     (scaled_image_right, pygame.Rect(0, 0, 50, 50))
 ]
+
+
 
 # Initialize fonts
 big_font = pygame.font.Font(pygame.font.get_default_font(), BIG_FONT_SIZE)
@@ -180,7 +183,8 @@ while True:
     in_game = True
 
     while in_game:
-        screen.fill(BLACK)
+
+        screen.blit(background_image, (0, 0))
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
