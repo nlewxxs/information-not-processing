@@ -115,8 +115,9 @@ if __name__ == "__main__":
 
     fpga = FPGA()               # init a new FPGA instance
     fpga.start_communication()  # initialise communication
-    fpga.read()                 # get reading at that point in time
+    #fpga.read()                 # get reading at that point in time
 
-
+    while True:
+        print(fpga.read())
             
 
