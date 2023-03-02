@@ -53,10 +53,10 @@ class Connection:
             # clears nios2 terminal welcome message from stdout buffer
             # iso-8859-1 prevents UnicodeDecodeError (some weird character being sent by nios)
 
-        os.system("echo '\nNIOS II Host Controller' | lolcat -F 0.8")
-        os.system('echo "------------------------------------------------------\n" | lolcat -F 0.8')
+        os.system("echo '\nNIOS II Host Controller'")
+        os.system('echo "------------------------------------------------------\n"')
         print("Press 1 to enable filtering, 0 for raw accelerometer data. \nPress 'd' to toggle data transfer \nPress 'c' to update coefficients \nPress 'q' to quit\n")
-        os.system('echo "------------------------------------------------------" | lolcat -F 0.8')
+        os.system('echo "------------------------------------------------------"')
         time.sleep(0.2)
 
         readings = threading.Thread(target=self.read_from_terminal)
