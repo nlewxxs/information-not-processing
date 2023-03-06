@@ -1,3 +1,5 @@
+#adding name input screen
+
 import pygame
 import socket
 import threading
@@ -219,6 +221,8 @@ while True:
     game_over = False
     in_game = False
     full_ready = False
+
+    name_entered = False
     
     
     start1 = False
@@ -244,6 +248,39 @@ while True:
     #receive_thread.setDaemon(True)
     receive_thread.start()
     
+    while not name_entered:
+        '''
+        name_input = ""
+        screen.fill(BLACK)
+        draw_text('Enter your name:', medium_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 3)
+        draw_text(name_input, medium_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
+        pygame.display.update()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                Leave = True
+                time.sleep(1)  # use to let the thread close first before disconnecting the socket
+                client_socket.send('quit'.encode())
+                time.sleep(1)
+                client_socket.close()
+                pygame.quit()
+                quit()
+
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_BACKSPACE:
+                    name_input = name_input[:-1]
+                elif event.key == pygame.K_RETURN:
+                    name_entered = True
+                    time.sleep(0.1)
+                else:
+                    name_input += event.unicode
+        print(name_input)
+        clock.tick(60)
+        '''
+        name = input("Enter your name:  ")
+        print(name)
+        name_entered = True
+
     while not connected:
         print('1')
         screen.fill(BLACK)
@@ -397,7 +434,7 @@ while True:
         # Draw the rectangles for the falling notes
         for rect in map_rect:
             screen.blit(rect.image, rect.rect)
-            rect.rect.y += 2  # ----------------------------falling speed --------------------
+            rect.rect.y += 5  # ----------------------------falling speed --------------------
 
             # Check if a note hits a key
             for key in keys:
@@ -473,6 +510,7 @@ while True:
                 GameOver2 = True
                 client_socket.send("2GameOver".encode())
              
+            client_socket.send(("serverName"+"/"+str(score)+"/"+name).encode())
               
             
         # Update display and tick clock
