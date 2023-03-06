@@ -36,7 +36,7 @@ def store_player_score(server_name, name, score):
     table = dynamodb.Table('PlayerScores')
     response = table.put_item(
         Item={
-            'server_name': server_name,
+            'serverIP': server_name,
             'name': name,
             'score': score
         }

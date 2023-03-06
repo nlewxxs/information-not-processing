@@ -505,12 +505,16 @@ while True:
             if is_player1:
                 GameOver1 = True
                 client_socket.send("1GameOver".encode())
+                time.sleep(0.2)
+                client_socket.send(("serverName"+"/"+str(score)+"/"+name).encode())
 
             if is_player2:
                 GameOver2 = True
                 client_socket.send("2GameOver".encode())
+                time.sleep(0.2)
+                client_socket.send(("serverName"+"/"+str(score)+"/"+name).encode())
              
-            client_socket.send(("serverName"+"/"+str(score)+"/"+name).encode())
+            
               
             
         # Update display and tick clock
