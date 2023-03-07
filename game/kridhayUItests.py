@@ -41,10 +41,10 @@ server_name = '13.40.237.136'
 server_port = 12000
 client_socket.connect((server_name, server_port))
 
-rightArrow = pygame.image.load("images/rightArrow.png")
-leftArrow = pygame.image.load("images/leftArrow.png")
-upArrow = pygame.image.load("images/upArrow.png")
-downArrow = pygame.image.load("images/downArrow.png")
+rightArrow = pygame.image.load("assets/rightArrow.png")
+leftArrow = pygame.image.load("assets/leftArrow.png")
+upArrow = pygame.image.load("assets/upArrow.png")
+downArrow = pygame.image.load("assets/downArrow.png")
 
 
 # Change the size of the image
@@ -75,10 +75,10 @@ keys = [{'rect': pygame.Rect(200, 500, 80, 80), 'color1': RED, 'color2': (180, 0
         {'rect': pygame.Rect(800, 500, 80, 80), 'color1': YELLOW, 'color2': (180, 180, 0), 'key': pygame.K_4},]
 
 # Define levels
-# 2/3 level are not implemented yet
-levels = [    {'name': 'Freedom Drive', 'file': 'freedom dive.txt', 'music': 'freedom dive.mp3', 'backdrop': pygame.image.load("images/sunsetDriveBackdrop.png")},  
-              {'name': 'Tundra Walkway ', 'file': 'freedom dive.txt', 'music': 'freedom dive.mp3', 'backdrop': pygame.image.load("images/tundraWalkwayBackdrop.png")},  
-              {'name': 'Moonlight Sonata', 'file': 'freedom dive.txt', 'music': 'freedom dive.mp3', 'backdrop': pygame.image.load("images/moonlightSontanaBackdrop.png")},]
+# Music from https://freemusicarchive.org/.  Specific tracks used: Drivin' Round Town by Jack Adkins, Sneakers by Crowander and Freedom by Cyrus 
+levels = [    {'name': 'Freedom Drive', 'file': 'assets/freedom dive.txt', 'music': 'assets/freedom.mp3', 'backdrop': pygame.image.load("assets/sunsetDriveBackdrop.png"), 'speed':4},  
+              {'name': 'Tundra Walkway ', 'file': 'assets/freedom dive.txt', 'music': 'assets/tundra.mp3', 'backdrop': pygame.image.load("assets/tundraWalkwayBackdrop.jpg"), 'speed':5},  
+              {'name': 'Moonlight Sonata', 'file': 'assets/freedom dive.txt', 'music': 'assets/moonlight.mp3', 'backdrop': pygame.image.load("assets/moonlightSontanaBackdrop.png"), 'speed':6},]
 
 # Dropping arrows:
 class DroppingRect():
@@ -97,6 +97,9 @@ def draw_text(text, font, color, x, y):
 
 def draw_menu():
     screen.fill(BLACK)
+    wallpaper = pygame.image.load("assets/levelSelect.png")
+    wallpaper.set_alpha(128)
+    screen.blit(wallpaper, (0,0))
     draw_text('Select a level', big_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 3)
 
     # Draw level options
@@ -210,7 +213,7 @@ while True:
         # Draw the rectangles for the falling notes
         for rect in map_rect:
             screen.blit(rect.image, rect.rect)
-            rect.rect.y += 5  # ----------------------------falling speed --------------------
+            rect.rect.y += level['speed']  # ----------------------------falling speed --------------------
 
             # Check if a note hits a key
             for key in keys:
@@ -275,6 +278,9 @@ while True:
         # When game is over
         if game_over:
             screen.fill(BLACK)
+            wallpaper = pygame.image.load("assets/levelSelect.png")
+            wallpaper.set_alpha(128)
+            screen.blit(wallpaper, (0,0))
             if (score > other_player_score):
                 draw_text('Game Over ! YOU WIN !', big_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 3)
             elif (score < other_player_score):
