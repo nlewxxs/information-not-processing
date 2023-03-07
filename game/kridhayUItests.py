@@ -2,6 +2,7 @@ import pygame
 import socket
 import threading
 import time
+import random
 
 
 from pygame import mixer
@@ -76,9 +77,9 @@ keys = [{'rect': pygame.Rect(200, 500, 80, 80), 'color1': RED, 'color2': (180, 0
 
 # Define levels
 # Music from https://freemusicarchive.org/.  Specific tracks used: Drivin' Round Town by Jack Adkins, Sneakers by Crowander and Freedom by Cyrus 
-levels = [    {'name': 'Freedom Drive', 'file': 'assets/freedom dive.txt', 'music': 'assets/freedom.mp3', 'backdrop': pygame.image.load("assets/sunsetDriveBackdrop.png"), 'speed':4},  
-              {'name': 'Tundra Walkway ', 'file': 'assets/freedom dive.txt', 'music': 'assets/tundra.mp3', 'backdrop': pygame.image.load("assets/tundraWalkwayBackdrop.jpg"), 'speed':5},  
-              {'name': 'Moonlight Sonata', 'file': 'assets/freedom dive.txt', 'music': 'assets/moonlight.mp3', 'backdrop': pygame.image.load("assets/moonlightSontanaBackdrop.png"), 'speed':6},]
+levels = [    {'name': 'Freedom Drive', 'file': 'assets/level.txt', 'music': 'assets/freedom.mp3', 'backdrop': pygame.image.load("assets/sunsetDriveBackdrop.png"), 'speed':4},  
+              {'name': 'Tundra Walkway ', 'file': 'assets/level.txt', 'music': 'assets/tundra.mp3', 'backdrop': pygame.image.load("assets/tundraWalkwayBackdrop.jpg"), 'speed':5},  
+              {'name': 'Moonlight Sonata', 'file': 'assets/level.txt', 'music': 'assets/moonlight.mp3', 'backdrop': pygame.image.load("assets/moonlightSontanaBackdrop.png"), 'speed':6},]
 
 # Dropping arrows:
 class DroppingRect():
@@ -113,7 +114,14 @@ def load_level(level):
     mixer.music.load(level['music'])
     mixer.music.play()
 
-    f = open(level['file'])
+    with open("assets/level.txt", "w") as file:
+        levelGen = ["0\n", " 1\n", "  2\n", "   3\n"]
+        file.truncate(0)
+        for i in range(50):
+            file.write(levelGen[random.randint(0,3)])
+            
+
+    f = open("assets/level.txt")
     data = f.readlines()
 
     for y in range(len(data)):
