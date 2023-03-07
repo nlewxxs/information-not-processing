@@ -77,9 +77,9 @@ keys = [{'rect': pygame.Rect(200, 500, 80, 80), 'color1': RED, 'color2': (180, 0
 
 # Define levels
 # Music from https://freemusicarchive.org/.  Specific tracks used: Drivin' Round Town by Jack Adkins, Sneakers by Crowander and Freedom by Cyrus 
-levels = [    {'name': 'Freedom Drive', 'file': 'assets/level.txt', 'music': 'assets/freedom.mp3', 'backdrop': pygame.image.load("assets/sunsetDriveBackdrop.png"), 'speed':4},  
-              {'name': 'Tundra Walkway ', 'file': 'assets/level.txt', 'music': 'assets/tundra.mp3', 'backdrop': pygame.image.load("assets/tundraWalkwayBackdrop.jpg"), 'speed':5},  
-              {'name': 'Moonlight Sonata', 'file': 'assets/level.txt', 'music': 'assets/moonlight.mp3', 'backdrop': pygame.image.load("assets/moonlightSontanaBackdrop.png"), 'speed':6},]
+levels = [    {'name': 'Freedom Drive', 'file': 'assets/level.txt', 'music': 'assets/freedom.mp3', 'backdrop': pygame.image.load("assets/sunsetDriveBackdrop.png"), 'speed':2},  
+              {'name': 'Tundra Walkway ', 'file': 'assets/level.txt', 'music': 'assets/tundra.mp3', 'backdrop': pygame.image.load("assets/tundraWalkwayBackdrop.jpg"), 'speed':3},  
+              {'name': 'Moonlight Sonata', 'file': 'assets/level.txt', 'music': 'assets/moonlight.mp3', 'backdrop': pygame.image.load("assets/moonlightSontanaBackdrop.png"), 'speed':4},]
 
 # Dropping arrows:
 class DroppingRect():
