@@ -4,6 +4,7 @@ import pygame
 import socket
 import threading
 import time
+import json
 
 from pygame import mixer
 
@@ -61,6 +62,7 @@ big_font = pygame.font.Font(pygame.font.get_default_font(), BIG_FONT_SIZE)
 medium_font = pygame.font.Font(pygame.font.get_default_font(), MEDIUM_FONT_SIZE)
 small_font = pygame.font.Font(pygame.font.get_default_font(), SMALL_FONT_SIZE)
 tiny_font = pygame.font.Font(pygame.font.get_default_font(), TINY_FONT_SIZE)
+font = pygame.font.SysFont("Arial", 20)
 
 clock = pygame.time.Clock()
 
@@ -133,7 +135,7 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 def receive():
     # Wait for start signal from server
-    global in_game
+    global in_game, leaderboard_data
     while not Leave:
        
             global full_ready, is_player1, is_player2, is_player1_ready, is_player2_ready
@@ -204,6 +206,10 @@ def receive():
             
             elif data == "1GameOver":
                 GameOver1 = True
+
+            elif data.startswith("["):
+                leaderboard_data = json.loads(data)
+                print(leaderboard_data)
 
             elif data == "quit":
                 print("receive quit")
@@ -528,6 +534,8 @@ while True:
 
     is_player1_ready = False
     is_player2_ready = False
+    leaderboard = False
+    leaderboard_data = []
 
     while game_over:
         screen.fill(BLACK)
@@ -552,6 +560,7 @@ while True:
                 draw_text(f'Final Score: {score}', small_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2.5 + 80)
                 draw_text(f'Player2 score: {P2Score}', small_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2.5 + 160)
                 draw_text('Press 0 to go back to the main menu', tiny_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2.5 + 240)
+                draw_text('Press 1 to show leaderboard', tiny_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2.5 + 280)
                 pygame.display.update()
                 clock.tick(60)
             
@@ -567,6 +576,7 @@ while True:
                 draw_text(f'Final Score: {score}', small_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2.5 + 80)
                 draw_text(f'Player1 score: {P1Score}', small_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2.5 + 160)
                 draw_text('Press 0 to go back to the main menu', tiny_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2.5 + 240)
+                draw_text('Press 1 to show leaderboard', tiny_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2.5 + 280)
                 pygame.display.update()
                 clock.tick(60)
 
@@ -590,6 +600,52 @@ while True:
                     mixer.music.stop()
                     game_over = False
                     break
+                if event.key == pygame.K_1:
+                    print("1 is pressed")
+                    #mixer.music.stop()
+                    leaderboard = True
+                    break
+
+        while leaderboard:
+            screen.fill(BLACK)
+            client_socket.send("Leaderboard".encode())
+            # Define the position to start rendering the text
+
+            draw_text('LeaderBoard', small_font, WHITE, SCREEN_WIDTH // 2, 60)
+
+            x = SCREEN_WIDTH // 5
+            y = SCREEN_HEIGHT // 5
+
+            # Render the leaderboard data as text on the screen
+            for i, entry in enumerate(leaderboard_data):
+                # Render the player name
+                name_text = font.render(f"{i+1}. {entry['name']}", True, (255, 255, 255))
+                screen.blit(name_text, (x, y + i*45))
+                
+                # Render the player score
+                score_text = font.render(str(entry['score']), True, (255, 255, 255))
+                screen.blit(score_text, (x + 500, y + i*45))
+
+            # Update the display
+            pygame.display.update()
+
+            for event in pygame.event.get():
+            
+                if event.type == pygame.QUIT:
+                    Leave = True
+                    time.sleep(1)  # use to let the thread close first before disconnecting the socket
+                    client_socket.send('quit'.encode())
+                    time.sleep(1)
+                    client_socket.close()
+                    pygame.quit()
+                    quit()
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_0:
+                        print("0 is pressed")
+                        #mixer.music.stop()
+                        leaderboard = False
+                        break
+
                     
         if not game_over:
             break
