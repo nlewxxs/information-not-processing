@@ -113,11 +113,11 @@ def draw_menu():
 
 def generate_text():
     with open("assets/level.txt", "w") as file:
-        levelGen = ["0", "1", "2", "3"]
+        levelGen = ["0", "1", "2", "3", "4"]
         levelstring = ""
         file.truncate(0)
         for i in range(50):
-            temp = levelGen[random.randint(0,3)]
+            temp = levelGen[random.randint(0,4)]
             file.write(temp+"\n")
             levelstring = levelstring + temp
     return levelstring
