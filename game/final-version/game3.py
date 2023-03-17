@@ -8,6 +8,13 @@ import random
 
 from pygame import mixer
 
+#NIK'S Section =======================================
+#import Nik's FPGA library
+fpga = FPGA() #instance of FPGA class
+fpga.start_communication()
+
+#====================================================
+
 pygame.init()
 mixer.init()
 
@@ -70,10 +77,10 @@ font = pygame.font.SysFont("Arial", 20)
 clock = pygame.time.Clock()
 
 # Define keys and their colors
-keys = [{'rect': pygame.Rect(200, 500, 80, 80), 'color1': RED, 'color2': (180, 0, 0), 'key': pygame.K_1},    
-        {'rect': pygame.Rect(400, 500, 80, 80), 'color1': GREEN, 'color2': (0, 180, 0), 'key': pygame.K_2},    
-        {'rect': pygame.Rect(600, 500, 80, 80), 'color1': BLUE, 'color2': (0, 0, 180), 'key': pygame.K_3},    
-        {'rect': pygame.Rect(800, 500, 80, 80), 'color1': YELLOW, 'color2': (180, 180, 0), 'key': pygame.K_4},]
+keys = [{'rect': pygame.Rect(200, 500, 80, 80), 'color1': RED, 'color2': (180, 0, 0), 'key': pygame.K_1, 'label': 'L\n'},    
+        {'rect': pygame.Rect(400, 500, 80, 80), 'color1': GREEN, 'color2': (0, 180, 0), 'key': pygame.K_2, 'label': 'U\n'},    
+        {'rect': pygame.Rect(600, 500, 80, 80), 'color1': BLUE, 'color2': (0, 0, 180), 'key': pygame.K_3, 'label': 'D\n'},    
+        {'rect': pygame.Rect(800, 500, 80, 80), 'color1': YELLOW, 'color2': (180, 180, 0), 'key': pygame.K_4, 'label': 'R\n'},]
 
 # Define levels
 # Music from https://freemusicarchive.org/.  Specific tracks used: Drivin' Round Town by Jack Adkins, Sneakers by Crowander and Freedom by Cyrus 
@@ -500,8 +507,11 @@ while True:
 
         # Handle key events
         k = pygame.key.get_pressed()
+
+        reading = fpga.read()
+
         for key in keys:
-            if k[key['key']]:
+            if k[key['key']] or reading == key['label']:
                 pygame.draw.rect(screen, key['color1'], key['rect'])
                 key['pressed'] = True
             else:
