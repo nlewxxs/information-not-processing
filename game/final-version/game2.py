@@ -113,12 +113,12 @@ def draw_menu():
 
 def generate_text():
     with open("assets/level.txt", "w") as file:
-        levelGen = ["0\n", "1\n", "2\n", "3\n"]
+        levelGen = ["0", "1", "2", "3"]
         levelstring = ""
         file.truncate(0)
         for i in range(50):
             temp = levelGen[random.randint(0,3)]
-            file.write(temp)
+            file.write(temp+"\n")
             levelstring = levelstring + temp
     return levelstring
    
@@ -343,10 +343,12 @@ while True:
     while not full_ready and connected:
         #print("2")
         #print(is_player1)
+        time.sleep(0.3)
 
-        if i == 0:
+        if i == 0 and is_player1:
             send_level = generate_text() 
             client_socket.send(("LevelString/" + send_level).encode())
+            time.sleep(0.2)
             i += 1
 
 
