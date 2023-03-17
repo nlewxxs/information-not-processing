@@ -1,5 +1,4 @@
 #adding name input screen
-
 import pygame
 import socket
 import threading
@@ -46,10 +45,15 @@ client_socket.connect((server_name, server_port))
 image = pygame.image.load("image.jpg")
 
 # Change the size of the image
-scaled_image_right = pygame.transform.scale(image, (50, 50))
-scaled_image_up =pygame.transform.rotate(scaled_image_right,90)
-scaled_image_left =pygame.transform.rotate(scaled_image_up,90)
-scaled_image_down =pygame.transform.rotate(scaled_image_left,90)
+rightArrow = pygame.image.load("assets/rightArrow.png")
+leftArrow = pygame.image.load("assets/leftArrow.png")
+upArrow = pygame.image.load("assets/upArrow.png")
+downArrow = pygame.image.load("assets/downArrow.png")
+
+scaled_image_right = pygame.transform.scale(rightArrow, (50, 50))
+scaled_image_up =pygame.transform.scale(upArrow, (50, 50))
+scaled_image_left =pygame.transform.scale(leftArrow, (50, 50))
+scaled_image_down =pygame.transform.scale(downArrow, (50, 50))
 
 images = [
     (scaled_image_left, pygame.Rect(0, 0, 50, 50)),
@@ -71,13 +75,13 @@ clock = pygame.time.Clock()
 keys = [{'rect': pygame.Rect(200, 500, 80, 80), 'color1': RED, 'color2': (180, 0, 0), 'key': pygame.K_1},    
         {'rect': pygame.Rect(400, 500, 80, 80), 'color1': GREEN, 'color2': (0, 180, 0), 'key': pygame.K_2},    
         {'rect': pygame.Rect(600, 500, 80, 80), 'color1': BLUE, 'color2': (0, 0, 180), 'key': pygame.K_3},    
-        {'rect': pygame.Rect(800, 500, 80, 80), 'color1': (255, 255, 0), 'color2': (180, 180, 0), 'key': pygame.K_4},]
+        {'rect': pygame.Rect(800, 500, 80, 80), 'color1': YELLOW, 'color2': (180, 180, 0), 'key': pygame.K_4},]
 
 # Define levels
-# 2/3 level are not implemented yet
-levels = [{'name': 'Freedom Dive', 'file': 'freedom dive.txt', 'music': 'freedom dive.mp3'},
-          {'name': 'Canon in D', 'file': 'canon_in_d.txt', 'music': 'canon_in_d.mp3'},
-          {'name': 'Moonlight Sonata', 'file': 'moonlight_sonata.txt', 'music': 'moonlight_sonata.mp3'}]
+# Music from https://freemusicarchive.org/.  Specific tracks used: Drivin' Round Town by Jack Adkins, Sneakers by Crowander and Freedom by Cyrus 
+levels = [    {'name': 'Freedom Drive', 'file': 'assets/level.txt', 'music': 'assets/freedom.mp3', 'backdrop': pygame.image.load("assets/sunsetDriveBackdrop.png"), 'speed':2},  
+              {'name': 'Tundra Walkway ', 'file': 'assets/level.txt', 'music': 'assets/tundra.mp3', 'backdrop': pygame.image.load("assets/tundraWalkwayBackdrop.jpg"), 'speed':3},  
+              {'name': 'Moonlight Sonata', 'file': 'assets/level.txt', 'music': 'assets/moonlight.mp3', 'backdrop': pygame.image.load("assets/moonlightSontanaBackdrop.png"), 'speed':4},]
 
 
 
@@ -96,9 +100,11 @@ def draw_text(text, font, color, x, y):
     rect.center = (x, y)
     screen.blit(surface, rect)
 
-'''
 def draw_menu():
     screen.fill(BLACK)
+    wallpaper = pygame.image.load("assets/levelSelect.png")
+    wallpaper.set_alpha(128)
+    screen.blit(wallpaper, (0,0))
     draw_text('Select a level', big_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 3)
 
     # Draw level options
@@ -106,15 +112,19 @@ def draw_menu():
         x = SCREEN_WIDTH // 2
         y = SCREEN_HEIGHT // 2 + i * 60
         draw_text(f'{i+1}. {level["name"]}', small_font, WHITE, x, y)
-
-        '''
-        
+   
 def load_level(level):
     rects = []
     mixer.music.load(level['music'])
     mixer.music.play()
 
-    f = open(level['file'])
+    with open("assets/level.txt", "w") as file:
+        levelGen = ["0\n", " 1\n", "  2\n", "   3\n"]
+        file.truncate(0)
+        for i in range(50):
+            file.write(levelGen[random.randint(0,3)])
+
+    f = open("assets/level.txt")
     data = f.readlines()
 
     for y in range(len(data)):
@@ -370,10 +380,8 @@ while True:
             # Draw level selection menu
             # screen.fill(BLACK)
             draw_text('You are Player 1', big_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 3)
-            draw_text('Select a level', big_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
-
-            # Draw level options
-            draw_text(f'{levels[current_level]["name"]}', small_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 80 )
+            
+            draw_menu()
     
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -385,15 +393,34 @@ while True:
                     pygame.quit()
                     quit()
                 elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_1:
+                        level = levels[0]
+                        current_level = 0
+                        client_socket.send(("level " + str(current_level)).encode())
+                        time.sleep(0.5)
+                        client_socket.send("LevelS1".encode())
+                        level_selected = True
+                    elif event.key == pygame.K_2:
+                        level = levels[1]
+                        current_level = 1
+                        client_socket.send(("level " + str(current_level)).encode())
+                        time.sleep(0.5)
+                        client_socket.send("LevelS1".encode())
+                        level_selected = True
+                    elif event.key == pygame.K_3:
+                        level = levels[2]
+                        current_level = 2
+                        client_socket.send(("level " + str(current_level)).encode())
+                        time.sleep(0.5)
+                        client_socket.send("LevelS1".encode())
+                        level_selected = True
+                elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_RETURN:
                         client_socket.send(("level " + str(current_level)).encode())
                         time.sleep(0.5)
                         client_socket.send("LevelS1".encode())
                         level_selected = True
-                    elif event.key == pygame.K_1:
-                        current_level += 1
-                        if current_level >= len(levels):
-                            current_level = 0     
+                    
         
         pygame.display.update()
         clock.tick(60)
@@ -419,7 +446,7 @@ while True:
                 
     
     # Load level and start game
-    map_rect = load_level(levels[current_level])
+    map_rect = load_level(level)
     combo = 1
     perfect = 0
     
@@ -433,7 +460,7 @@ while True:
     while in_game:
         
         
-        screen.fill(BLACK)
+        screen.blit(level["backdrop"], (0, 0))
         
         
         for event in pygame.event.get():
@@ -567,7 +594,9 @@ while True:
 
     while game_over:
         screen.fill(BLACK)
-        
+        wallpaper = pygame.image.load("assets/levelSelect.png")
+        wallpaper.set_alpha(128)
+        screen.blit(wallpaper, (0,0))
 
         #draw_text('test', tiny_font, WHITE, SCREEN_WIDTH // 9, SCREEN_HEIGHT // 3)
         

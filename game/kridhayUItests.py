@@ -37,8 +37,8 @@ Leave = False
 # Set up the TCP client socket
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 #the server name and port client wishes to access
-server_name = '13.40.237.136'
-#'54.210.203.6'
+server_name = '54.210.203.6' 
+#'13.40.237.136'
 server_port = 12000
 client_socket.connect((server_name, server_port))
 
