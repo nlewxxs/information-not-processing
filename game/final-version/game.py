@@ -41,8 +41,6 @@ server_port = 12000
 client_socket.connect((server_name, server_port))
 
 
-# Load the image
-image = pygame.image.load("image.jpg")
 
 # Change the size of the image
 rightArrow = pygame.image.load("assets/rightArrow.png")
@@ -119,7 +117,7 @@ def load_level(level):
     mixer.music.play()
 
     with open("assets/level.txt", "w") as file:
-        levelGen = ["0\n", " 1\n", "  2\n", "   3\n"]
+        levelGen = ["0\n", "1\n", "2\n", "3\n"]
         file.truncate(0)
         for i in range(50):
             file.write(levelGen[random.randint(0,3)])
@@ -130,13 +128,13 @@ def load_level(level):
     for y in range(len(data)):
         for x in range(len(data[y])):
             if data[y][x] == '0':
-                rects.append(DroppingRect(images[0][0], keys[x]['rect'].centerx - 25, y * -100))
+                rects.append(DroppingRect(images[0][0], keys[0]['rect'].centerx - 25, y * -100))
             elif data[y][x] == '1':
-                rects.append(DroppingRect(images[1][0], keys[x]['rect'].centerx - 25, y * -100))
+                rects.append(DroppingRect(images[1][0], keys[1]['rect'].centerx - 25, y * -100))
             elif data[y][x] == '2':
-                rects.append(DroppingRect(images[2][0], keys[x]['rect'].centerx - 25, y * -100))
+                rects.append(DroppingRect(images[2][0], keys[2]['rect'].centerx - 25, y * -100))
             elif data[y][x] == '3':
-                rects.append(DroppingRect(images[3][0], keys[x]['rect'].centerx - 25, y * -100))
+                rects.append(DroppingRect(images[3][0], keys[3]['rect'].centerx - 25, y * -100))
     return rects
 
 # Start game loop
@@ -446,7 +444,7 @@ while True:
                 
     
     # Load level and start game
-    map_rect = load_level(level)
+    map_rect = load_level(levels[current_level])
     combo = 1
     perfect = 0
     
@@ -460,7 +458,7 @@ while True:
     while in_game:
         
         
-        screen.blit(level["backdrop"], (0, 0))
+        screen.blit(levels[current_level]["backdrop"], (0, 0))
         
         
         for event in pygame.event.get():
@@ -486,7 +484,7 @@ while True:
         # Draw the rectangles for the falling notes
         for rect in map_rect:
             screen.blit(rect.image, rect.rect)
-            rect.rect.y += 5  # ----------------------------falling speed --------------------
+            rect.rect.y += levels[current_level]['speed']  # ----------------------------falling speed --------------------
 
             # Check if a note hits a key
             for key in keys:
