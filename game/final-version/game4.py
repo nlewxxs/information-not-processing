@@ -24,6 +24,7 @@ YELLOW = (255, 255, 0)
 # Define font sizes
 BIG_FONT_SIZE = 80
 MEDIUM_FONT_SIZE = 60
+CUSTOM_FONT_SIZE = 45
 SMALL_FONT_SIZE = 40
 TINY_FONT_SIZE = 20
 
@@ -64,16 +65,43 @@ images = [
 big_font = pygame.font.Font(pygame.font.get_default_font(), BIG_FONT_SIZE)
 medium_font = pygame.font.Font(pygame.font.get_default_font(), MEDIUM_FONT_SIZE)
 small_font = pygame.font.Font(pygame.font.get_default_font(), SMALL_FONT_SIZE)
+custom_font = pygame.font.Font(pygame.font.get_default_font(), CUSTOM_FONT_SIZE)
 tiny_font = pygame.font.Font(pygame.font.get_default_font(), TINY_FONT_SIZE)
-font = pygame.font.SysFont("Arial", 20)
+
 
 clock = pygame.time.Clock()
 
 # Define keys and their colors
-keys = [{'rect': pygame.Rect(200, 500, 80, 80), 'color1': RED, 'color2': (180, 0, 0), 'key': pygame.K_1},    
-        {'rect': pygame.Rect(400, 500, 80, 80), 'color1': GREEN, 'color2': (0, 180, 0), 'key': pygame.K_2},    
-        {'rect': pygame.Rect(600, 500, 80, 80), 'color1': BLUE, 'color2': (0, 0, 180), 'key': pygame.K_3},    
-        {'rect': pygame.Rect(800, 500, 80, 80), 'color1': YELLOW, 'color2': (180, 180, 0), 'key': pygame.K_4},]
+redNet = pygame.image.load("assets/basketball-hoop-red.png")
+greenNet = pygame.image.load("assets/basketball-hoop-green.png")
+blueNet = pygame.image.load("assets/basketball-hoop-blue.png")
+yellowNet = pygame.image.load("assets/basketball-hoop-yellow.png")
+
+button_width = 80
+button_height = 80
+
+# Create new surfaces with the same size as the scaled images
+redNet_surface = pygame.Surface((button_width, button_height))
+redNet_surface.set_colorkey((0, 0, 0))
+greenNet_surface = pygame.Surface((button_width, button_height))
+greenNet_surface.set_colorkey((0, 0, 0))
+blueNet_surface = pygame.Surface((button_width, button_height))
+blueNet_surface.set_colorkey((0, 0, 0))
+yellowNet_surface = pygame.Surface((button_width, button_height))
+yellowNet_surface.set_colorkey((0, 0, 0))
+
+# Draw the scaled images onto the new surfaces
+redNet_surface.blit(pygame.transform.scale(redNet, (button_width, button_height)), (0, 0))
+greenNet_surface.blit(pygame.transform.scale(greenNet, (button_width, button_height)), (0, 0))
+blueNet_surface.blit(pygame.transform.scale(blueNet, (button_width, button_height)), (0, 0))
+yellowNet_surface.blit(pygame.transform.scale(yellowNet, (button_width, button_height)), (0, 0))
+
+keys = [
+    {'surface': redNet_surface, 'rect': redNet_surface.get_rect(centerx=200, centery=500), 'color1': RED, 'color2': (180, 0, 0), 'key': pygame.K_1, 'pressed': False},
+    {'surface': greenNet_surface, 'rect': greenNet_surface.get_rect(centerx=400, centery=500), 'color1': GREEN, 'color2': (0, 180, 0), 'key': pygame.K_2, 'pressed': False},
+    {'surface': blueNet_surface, 'rect': blueNet_surface.get_rect(centerx=600, centery=500), 'color1': BLUE, 'color2': (0, 0, 180), 'key': pygame.K_3, 'pressed': False},
+    {'surface': yellowNet_surface, 'rect': yellowNet_surface.get_rect(centerx=800, centery=500), 'color1': YELLOW, 'color2': (180, 180, 0), 'key': pygame.K_4, 'pressed': False}
+]
 
 # Define levels
 # Music from https://freemusicarchive.org/.  Specific tracks used: Drivin' Round Town by Jack Adkins, Sneakers by Crowander and Freedom by Cyrus 
@@ -100,15 +128,15 @@ def draw_text(text, font, color, x, y):
 
 def draw_menu():
     screen.fill(BLACK)
-    wallpaper = pygame.image.load("assets/levelSelect.png")
-    wallpaper.set_alpha(128)
-    screen.blit(wallpaper, (0,0))
-    draw_text('Select a level', big_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 3)
+    levelSelectImage = pygame.image.load('assets/selectLevel.png')
+    image = pygame.transform.scale(levelSelectImage, (SCREEN_WIDTH, SCREEN_HEIGHT))
+    screen.blit(image, (0, 0))
+    draw_text('Select a level', big_font, WHITE, SCREEN_WIDTH // 3.2, SCREEN_HEIGHT // 3.5)
 
     # Draw level options
     for i, level in enumerate(levels):
-        x = SCREEN_WIDTH // 2
-        y = SCREEN_HEIGHT // 2 + i * 60
+        x = SCREEN_WIDTH // 3
+        y = SCREEN_HEIGHT // 2.4 + i * 80
         draw_text(f'{i+1}. {level["name"]}', small_font, WHITE, x, y)
 
 def generate_text():
@@ -285,17 +313,19 @@ while True:
     #receive_thread.setDaemon(True)
     receive_thread.start()
     
-    while not name_entered:
+    while not name_entered: #Screen 1
         
         screen.fill(BLACK)
-        draw_text('Enter your name:', medium_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 3)
-        draw_text(name, medium_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
+        background_image = pygame.image.load('assets/homepage.png')
+        image = pygame.transform.scale(background_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
+        screen.blit(image, (0, 0))
+        draw_text(name, medium_font, YELLOW, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 1.46)
         pygame.display.update()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 Leave = True
-                time.sleep(1)  # use to let the thread close first before disconnecting the socket
+                time.sleep(1) 
                 client_socket.send('quit'.encode())
                 time.sleep(1)
                 client_socket.close()
@@ -311,18 +341,14 @@ while True:
                 else:
                     name += event.unicode
         print(name)
+        pygame.display.update()
         clock.tick(60)
-
-        '''
-        name = input("Enter your name:  ")
-        print(name)
-        name_entered = True
-        '''
         
-    while not connected:
-        print('1')
+    while not connected: #Screen 2
         screen.fill(BLACK)
-        draw_text('Waiting for other player...', big_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 3)
+        wait_screen_image = pygame.image.load('assets/waitingscreen.png')
+        image = pygame.transform.scale(wait_screen_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
+        screen.blit(image, (0, 0))
         client_socket.send("request".encode())
         time.sleep(0.3)
         pygame.display.update()
@@ -336,13 +362,12 @@ while True:
                 client_socket.close()
                 pygame.quit()
                 quit()
+
    
 
     send_level = ""
 
-    while not full_ready and connected:
-        #print("2")
-        #print(is_player1)
+    while not full_ready and connected: #Screen 3
         time.sleep(0.3)
 
         if i == 0 and is_player1:
@@ -353,6 +378,10 @@ while True:
 
 
         screen.fill(BLACK)
+        background_image = pygame.image.load('assets/standardpage.png')
+        image = pygame.transform.scale(background_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
+        screen.blit(image, (0, 0))
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 Leave = True
@@ -377,9 +406,9 @@ while True:
             
         # Draw player readiness status
         #draw_text(f'You are player  {"1" if is_player1 else "error"}', medium_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 160)
-        draw_text(f'You are player  {"2" if is_player2 else "1"}', medium_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 80)
-        draw_text(f'Player 1: {"Ready" if is_player1_ready else "Not Ready"}', medium_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
-        draw_text(f'Player 2: {"Ready" if is_player2_ready else "Not Ready"}', medium_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 80)
+        draw_text(f'You are player {"2" if is_player2 else "1"}', small_font, YELLOW, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 1.9 - 80)
+        draw_text(f'Player 1: {"Ready!" if is_player1_ready else "Not Ready Yet"}', small_font, YELLOW, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 1.9)
+        draw_text(f'Player 2: {"Ready!" if is_player2_ready else "Not Ready Yet"}', small_font, YELLOW, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 1.9 + 80)
 
         if is_player1_ready and is_player2_ready:
             client_socket.send("FullReady".encode())
@@ -389,14 +418,14 @@ while True:
                 
     
 
-    while not level_selected and full_ready:
-        print("3")
+    while not level_selected and full_ready: #Screen 4
         screen.fill(BLACK)
         print(is_player2)
         
         if is_player2:
-            draw_text('You are Player 2', big_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 3)
-            draw_text('Waiting for Player 1 to select level', small_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
+            wait_screen_image = pygame.image.load('assets/waitingscreenLevel.png')
+            image = pygame.transform.scale(wait_screen_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
+            screen.blit(image, (0, 0))
             # Check for messages from server
             pygame.display.update()
 
@@ -404,7 +433,6 @@ while True:
         if is_player1:
             # Draw level selection menu
             # screen.fill(BLACK)
-            draw_text('You are Player 1', big_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 3)
             
             draw_menu()
     
@@ -450,12 +478,10 @@ while True:
         pygame.display.update()
         clock.tick(60)
 
-    while not in_game:
-        #print("4")
+    while not in_game: #Screen 4.5
         screen.fill(BLACK)
         draw_text('Wait for start', big_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
         if start1 and start2:
-            #print("send FullStart")
             client_socket.send("FullStart".encode())
         pygame.display.update()
 
@@ -482,7 +508,7 @@ while True:
     #in_game = True
     
 
-    while in_game:
+    while in_game: #Screen 5
         
         
         screen.blit(levels[current_level]["backdrop"], (0, 0))
@@ -505,7 +531,7 @@ while True:
                 pygame.draw.rect(screen, key['color1'], key['rect'])
                 key['pressed'] = True
             else:
-                pygame.draw.rect(screen, key['color2'], key['rect'])
+                screen.blit(key['surface'], key['rect'])
                 key['pressed'] = False
 
         # Draw the rectangles for the falling notes
@@ -617,11 +643,11 @@ while True:
     leaderboard = False
     leaderboard_data = []
 
-    while game_over:
+    while game_over: #Screen 6
         screen.fill(BLACK)
-        wallpaper = pygame.image.load("assets/levelSelect.png")
-        wallpaper.set_alpha(128)
-        screen.blit(wallpaper, (0,0))
+        gameOverImage = pygame.image.load('assets/gameOver.png')
+        image = pygame.transform.scale(gameOverImage, (SCREEN_WIDTH, SCREEN_HEIGHT))
+        screen.blit(image, (0, 0))
 
         #draw_text('test', tiny_font, WHITE, SCREEN_WIDTH // 9, SCREEN_HEIGHT // 3)
         
@@ -688,13 +714,16 @@ while True:
                     leaderboard = True
                     break
 
-        while leaderboard:
+        while leaderboard: #Screen 7
             screen.fill(BLACK)
             client_socket.send(("Leaderboard" +"/"+ str(current_level)).encode())
             time.sleep(0.2)
             # Define the position to start rendering the text
 
-            draw_text('LeaderBoard', small_font, WHITE, SCREEN_WIDTH // 2, 60)
+            hallOfFameImage = pygame.image.load('assets/hallOfFame.png')
+            image = pygame.transform.scale(hallOfFameImage, (SCREEN_WIDTH, SCREEN_HEIGHT))
+            screen.blit(image, (0, 0))
+            
 
             x = SCREEN_WIDTH // 5
             y = SCREEN_HEIGHT // 5
