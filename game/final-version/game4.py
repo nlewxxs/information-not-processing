@@ -37,6 +37,7 @@ MEDIUM_FONT_SIZE = 60
 CUSTOM_FONT_SIZE = 45
 SMALL_FONT_SIZE = 40
 TINY_FONT_SIZE = 20
+font_path = "assets/Monaco.ttf"
 
 # store good/perfect/miss
 #messages = []
@@ -72,11 +73,11 @@ images = [
 ]
 
 # Initialize fonts
-big_font = pygame.font.Font(pygame.font.get_default_font(), BIG_FONT_SIZE)
-medium_font = pygame.font.Font(pygame.font.get_default_font(), MEDIUM_FONT_SIZE)
-small_font = pygame.font.Font(pygame.font.get_default_font(), SMALL_FONT_SIZE)
-custom_font = pygame.font.Font(pygame.font.get_default_font(), CUSTOM_FONT_SIZE)
-tiny_font = pygame.font.Font(pygame.font.get_default_font(), TINY_FONT_SIZE)
+big_font = pygame.font.Font(font_path, BIG_FONT_SIZE)
+medium_font = pygame.font.Font(font_path, MEDIUM_FONT_SIZE)
+small_font = pygame.font.Font(font_path, SMALL_FONT_SIZE)
+custom_font = pygame.font.Font(font_path, CUSTOM_FONT_SIZE)
+tiny_font = pygame.font.Font(font_path, TINY_FONT_SIZE)
 
 
 clock = pygame.time.Clock()
