@@ -11,6 +11,13 @@ from pygame import mixer
 pygame.init()
 mixer.init()
 
+# load the icon image
+#icon_image = pygame.image.load("icon.png")
+
+# set the window icon to the icon image
+#pygame.display.set_icon(icon_image)
+
+
 # Define constants
 SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 600
@@ -312,6 +319,9 @@ while True:
     receive_thread = threading.Thread(target=receive)
     #receive_thread.setDaemon(True)
     receive_thread.start()
+
+    mixer.music.load('assets/moonlight.mp3')
+    mixer.music.play()
     
     while not name_entered: #Screen 1
         
@@ -477,6 +487,8 @@ while True:
         
         pygame.display.update()
         clock.tick(60)
+
+    mixer.stop()
 
     while not in_game: #Screen 4.5
         screen.fill(BLACK)
