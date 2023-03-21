@@ -14,7 +14,7 @@ class FpgaNoResponse(Exception):
 class Connection:
 
     def __init__(self) -> None:
-        self._nios = subprocess.run(['C:/intelFPGA_lite/18.1/nios2eds/Nios II Command Shell.bat'], stdout=subprocess.PIPE, stdin=subprocess.PIPE, check=True)
+        self._nios = subprocess.Popen(['C:/intelFPGA_lite/18.1/nios2eds/Nios II Command Shell.bat'], stdout=subprocess.PIPE, stdin=subprocess.PIPE)
         self._control = ""
         self._reading = ""
         self._comms = True
@@ -119,6 +119,15 @@ class FPGA(Connection):
     def kill(self) -> None:
         #os.killpg(os.getpgid(self._nios.pid), signal.SIGTERM)        
         print ("idkkkk")
+        
+        # not sure for the following killing process
+        try:
+            subprocess.run(['taskkill', '/pid', str(self._nios.pid), '/t', '/f'], check=True)
+        except subprocess.CalledProcessError:
+            pass
+
+        
+
     # def send_result(self, win : bool, score : str) -> None:
     #     self._comms = False
     #     result = 'W' if win else 'L'
