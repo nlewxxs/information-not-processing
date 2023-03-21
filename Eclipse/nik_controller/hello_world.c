@@ -22,7 +22,7 @@
 #include <sys/alt_stdio.h>
 
 #define THRESHOLD_1G 255 //Threshold for 1G (force of gravity)
-#define INACT_SAMPLES 1000
+#define INACT_SAMPLES 10
 
 
 alt_32 xyz[] = {0,0,0}; //array of readings for each axis
@@ -95,22 +95,21 @@ int min() { //returns index of the maximum reading out of the 3 axes (current sa
 	return index;
 }
 
-int detect_ACT() {
+int detect_ACT(FILE* uart) {
 	int i = max();
 
 	//output char if the |acceleration|>threshold and gradient has same polarity
 	if (xyz[i]*10 > (act_thresh_coef[i][0]*THRESHOLD_1G)) { //multiplied by 10 to fine-tune threshold
-		printf("%c\n", output[i][0]);
+		if (uart) { alt_printf("%c\n", output[i][0]); }
 		led++;
 		return 1;
 	} else if ((xyz[i]*10 < -(act_thresh_coef[i][1]*THRESHOLD_1G))) { //Threshold cannot be below 255 as tilting the controller can cause reading abs(255) in any axis
-		printf("%c\n", output[i][1]);
-		printf("\n");
+		if (uart) { alt_printf("%c\n", output[i][1]); }
 		led++;
 		return 1;
 	} else {
 //		putchar('0');
-//		printf("\n");
+		alt_printf("0");
 		return 0; //return 0 if reading magnitude too small
 	}
 }
@@ -142,6 +141,9 @@ int wait_INACT() {
 int main(){
 	//INITIATING FILE FOR SENDING
 	FILE* fp;
+	char prompt;
+	char* score = malloc(4);
+	strcpy(score, "0000");
 	fp = fopen ("/dev/jtag_uart", "r+");
 
 	acc_dev = alt_up_accelerometer_spi_open_dev("/dev/accelerometer_spi");
@@ -154,53 +156,50 @@ int main(){
 	//The offset is scaled by a factor of 2 so (127 - 2*-63=0)(127=1G according to datasheet)
 	//The output is scaled to 8 bits (255=1G), difference is confusing but worked.
 
-	printf("hello");
-
 	timer_init(sys_timer_isr); //initialising timer with isr
 
 	while(1){
 		//READ DATA
-		alt_32 xyz_raw[] = {0,0,0};
-		read_accelerometer(xyz_raw);
 
-		//FILTER DATA
-//		IOWR_ALTERA_AVALON_PIO_DATA(FILTER_X_IN_BASE, xyz_raw[0]);
-//		IOWR_ALTERA_AVALON_PIO_DATA(FILTER_Y_IN_BASE, xyz_raw[1]);
-//		IOWR_ALTERA_AVALON_PIO_DATA(FILTER_Z_IN_BASE, xyz_raw[2]);
-//
-//		xyz[0] = IORD_ALTERA_AVALON_PIO_DATA(FILTER_X_OUT_BASE);
-//		xyz[1] = IORD_ALTERA_AVALON_PIO_DATA(FILTER_Y_OUT_BASE);
-//		xyz[2] = IORD_ALTERA_AVALON_PIO_DATA(FILTER_Z_OUT_BASE);
+		for (int j = 0; j < 1000; j++) {
+			alt_32 xyz_raw[] = {0,0,0};
+			read_accelerometer(xyz_raw);
 
-		//SUBROUTINE TRIGGERED BY TIMER
-		if (timer_f & en_f) {
+			//FILTER DATA
 			IOWR_ALTERA_AVALON_PIO_DATA(FILTER_X_IN_BASE, xyz_raw[0]);
 			IOWR_ALTERA_AVALON_PIO_DATA(FILTER_Y_IN_BASE, xyz_raw[1]);
 			IOWR_ALTERA_AVALON_PIO_DATA(FILTER_Z_IN_BASE, xyz_raw[2]);
+
 			xyz[0] = IORD_ALTERA_AVALON_PIO_DATA(FILTER_X_OUT_BASE);
 			xyz[1] = IORD_ALTERA_AVALON_PIO_DATA(FILTER_Y_OUT_BASE);
 			xyz[2] = IORD_ALTERA_AVALON_PIO_DATA(FILTER_Z_OUT_BASE);
 
-			en_f = !detect_ACT();
-			shift_xyz();
-			timer_f = 0;
-		} else if (!en_f) {
-			en_f = wait_INACT();
+			//SUBROUTINE TRIGGERED BY TIMER
+			if (timer_f & en_f) {
+				en_f = !detect_ACT(fp);
+				shift_xyz();
+				timer_f = 0;
+			} else if (!en_f) {
+				en_f = wait_INACT();
+			}
+
+			//TESTING HEX OUTPUTS
+			IOWR_ALTERA_AVALON_PIO_DATA(HEX_DISPLAY_BASE, abs(atof(score)));
+			IOWR_ALTERA_AVALON_PIO_DATA(LED_BASE, led);
 		}
 
-		//TESTING HEX OUTPUTS
-		// IOWR_ALTERA_AVALON_PIO_DATA(HEX_DISPLAY_BASE, abs(xyz[2]));
-		// IOWR_ALTERA_AVALON_PIO_DATA(LED_BASE, led);
-
-		//COMMUNICATION WITH PC
-//		if (fp) {
-//		    prompt = getc(fp);
-//		    fprintf(fp, "<--> Detected the character %c <--> \n", prompt);
-//		    if (prompt == 'W' || prompt == 'L') {
-//
-//		    }
-//		}
-
+		if (fp) {
+			prompt = getc(fp);
+			if (prompt == 's') {
+			// ASSIGN NEXT 4 CHARACTERS TO SCORE
+				for(int s = 0; s < 4; s++){
+					prompt = getc(fp);
+				    // fprintf(fp, "FPGA: %c\n", prompt);
+				    score[s] = prompt;
+				}
+		    }
+		}
+		// fprintf(fp, "score: %s\n", score);
 
 	}
 
