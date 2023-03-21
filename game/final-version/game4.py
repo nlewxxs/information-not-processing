@@ -12,10 +12,13 @@ pygame.init()
 mixer.init()
 
 # load the icon image
-#icon_image = pygame.image.load("icon.png")
+icon_image = pygame.image.load("icon.png")
 
 # set the window icon to the icon image
-#pygame.display.set_icon(icon_image)
+pygame.display.set_icon(icon_image)
+
+# set heading of pygame window
+pygame.display.set_caption("NETFLICKS")
 
 
 # Define constants
@@ -320,7 +323,7 @@ while True:
     #receive_thread.setDaemon(True)
     receive_thread.start()
 
-    mixer.music.load('assets/moonlight.mp3')
+    mixer.music.load('assets/homeSong.mp3')
     mixer.music.play()
     
     while not name_entered: #Screen 1
