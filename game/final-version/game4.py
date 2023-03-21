@@ -142,7 +142,7 @@ def draw_menu():
     levelSelectImage = pygame.image.load('assets/selectLevel.png')
     image = pygame.transform.scale(levelSelectImage, (SCREEN_WIDTH, SCREEN_HEIGHT))
     screen.blit(image, (0, 0))
-    draw_text('Select a level', big_font, WHITE, SCREEN_WIDTH // 3.2, SCREEN_HEIGHT // 3.5)
+    draw_text('Select a level', medium_font, WHITE, SCREEN_WIDTH // 3.2, SCREEN_HEIGHT // 3.5)
 
     # Draw level options
     for i, level in enumerate(levels):
@@ -613,11 +613,11 @@ while True:
                 client_socket.send(("2Score " + str(myscore)).encode())
 
         if is_player1:
-            othertext = tiny_font.render(f"Others Score: {P2Score}", True,"white")
+            othertext = tiny_font.render(f"Other Player Score: {P2Score}", True,"white")
             screen.blit(othertext,(600,0))
         
         if is_player2:
-            othertext = tiny_font.render(f"Others Score: {P1Score}", True,"white")
+            othertext = tiny_font.render(f"Other Player Score: {P1Score}", True,"white")
             screen.blit(othertext,(600,0))
         
 
