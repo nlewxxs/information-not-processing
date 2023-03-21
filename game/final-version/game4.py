@@ -332,7 +332,7 @@ while True:
         background_image = pygame.image.load('assets/homepage.png')
         image = pygame.transform.scale(background_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
         screen.blit(image, (0, 0))
-        draw_text(name, medium_font, YELLOW, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 1.46)
+        draw_text(name, medium_font, YELLOW, SCREEN_WIDTH // 1.5, SCREEN_HEIGHT // 1.46)
         pygame.display.update()
 
         for event in pygame.event.get():
@@ -419,9 +419,9 @@ while True:
             
         # Draw player readiness status
         #draw_text(f'You are player  {"1" if is_player1 else "error"}', medium_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 160)
-        draw_text(f'You are player {"2" if is_player2 else "1"}', small_font, YELLOW, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 1.9 - 80)
-        draw_text(f'Player 1: {"Ready!" if is_player1_ready else "Not Ready Yet"}', small_font, YELLOW, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 1.9)
-        draw_text(f'Player 2: {"Ready!" if is_player2_ready else "Not Ready Yet"}', small_font, YELLOW, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 1.9 + 80)
+        draw_text(f'YOU ARE PLAYER {"2" if is_player2 else "1"}', tiny_font, YELLOW, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 1.9 - 80)
+        draw_text(f'PLAYER 1: {"Ready!" if is_player1_ready else "Not Ready Yet"}', small_font, YELLOW, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 1.9)
+        draw_text(f'PLAYER 2: {"Ready!" if is_player2_ready else "Not Ready Yet"}', small_font, YELLOW, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 1.9 + 80)
 
         if is_player1_ready and is_player2_ready:
             client_socket.send("FullReady".encode())
@@ -674,32 +674,32 @@ while True:
             if is_player1:
                 print("gameover 1 finish")
                 if (score > P2Score):
-                    draw_text('Game Over ! YOU WIN !', big_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 3)
+                    draw_text('YOU WIN!', big_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 3)
                 elif (score < P2Score):
-                    draw_text('Game Over ! YOU LOSE !', big_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 3)
+                    draw_text('YOU LOSE!', big_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 3)
                 else:
-                    draw_text('Game Over !!!', big_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 3)
+                    draw_text('TIE!', big_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 3)
                 
                 draw_text(f'Final Score: {score}', small_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2.5 + 80)
-                draw_text(f'Player2 score: {P2Score}', small_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2.5 + 160)
-                draw_text('Press 0 to go back to the main menu', tiny_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2.5 + 240)
-                draw_text('Press 1 to show leaderboard', tiny_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2.5 + 280)
+                draw_text(f'Other Player score: {P2Score}', small_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2.5 + 160)
+                draw_text('Press 0 to go back to the Main Menu', tiny_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2.5 + 240)
+                draw_text('Press 1 to go to the Hall of Fame', tiny_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2.5 + 280)
                 pygame.display.update()
                 clock.tick(60)
             
             if is_player2:
                 print("gameover 1 finish")
                 if (score > P1Score):
-                    draw_text('Game Over ! YOU WIN !', big_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 3)
+                    draw_text('YOU WIN!', big_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 3)
                 elif (score < P1Score):
-                    draw_text('Game Over ! YOU LOSE !', big_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 3)
+                    draw_text('YOU LOSE!', big_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 3)
                 else:
-                    draw_text('Game Over !!!', big_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 3)
+                    draw_text('TIE!', big_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 3)
 
                 draw_text(f'Final Score: {score}', small_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2.5 + 80)
-                draw_text(f'Player1 score: {P1Score}', small_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2.5 + 160)
-                draw_text('Press 0 to go back to the main menu', tiny_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2.5 + 240)
-                draw_text('Press 1 to show leaderboard', tiny_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2.5 + 280)
+                draw_text(f'Other Player Score: {P1Score}', small_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2.5 + 160)
+                draw_text('Press 0 to go back to the Main Menu', tiny_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2.5 + 240)
+                draw_text('Press 1 to go to the Hall of Fame', tiny_font, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2.5 + 280)
                 pygame.display.update()
                 clock.tick(60)
 
