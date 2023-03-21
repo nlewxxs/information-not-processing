@@ -1,0 +1,23 @@
+14:10:21 **** Incremental Build of configuration Nios II for project controller_final ****
+make all 
+Info: Building ../controller_final_bsp/
+make --no-print-directory -C ../controller_final_bsp/
+Makefile:559: Warning: SOPC File C:/Users/andre/IP/Coursework/Golden_Top/nios_controller.sopcinfo could not be found.
+Makefile not up to date.
+settings.bsp has been modified since the BSP Makefile was generated.
+
+Generate the BSP to update the Makefile, and then build again.
+
+To generate from Eclipse:
+ 1. Right-click the BSP project.
+ 2. In the Nios II Menu, click Generate BSP.
+
+To generate from the command line:
+ nios2-bsp-generate-files --settings=<settings file> --bsp-dir=<target bsp files directory>
+
+make[1]: *** [Makefile:556: Makefile] Error 1
+make: *** [Makefile:842: ../controller_final_bsp/-recurs-make-lib] Error 2
+Command canceled
+
+14:10:23 Build Cancelled (took 2s.537ms)
+

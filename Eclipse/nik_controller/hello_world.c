@@ -22,7 +22,7 @@
 #include <sys/alt_stdio.h>
 
 #define THRESHOLD_1G 255 //Threshold for 1G (force of gravity)
-#define INACT_SAMPLES 1000
+#define INACT_SAMPLES 10
 
 
 alt_32 xyz[] = {0,0,0}; //array of readings for each axis
@@ -109,7 +109,7 @@ int detect_ACT(FILE* uart) {
 		return 1;
 	} else {
 //		putchar('0');
-//		printf("\n");
+		alt_printf("0");
 		return 0; //return 0 if reading magnitude too small
 	}
 }
