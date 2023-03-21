@@ -30,8 +30,8 @@ pygame.display.set_caption("NETFLICKS")
 
 
 # Define constants
-SCREEN_WIDTH = 1000
-SCREEN_HEIGHT = 600
+SCREEN_WIDTH = 1200
+SCREEN_HEIGHT = 900
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
@@ -558,7 +558,7 @@ while True:
                 pygame.draw.rect(screen, key['color1'], key['rect'])
                 key['pressed'] = True
             else:
-                screen.blit(key['surface'], key['rect'])
+                screen.blit(screen, key['surface'], key['rect'])
                 key['pressed'] = False
 
         # Draw the rectangles for the falling notes
@@ -752,18 +752,18 @@ while True:
             screen.blit(image, (0, 0))
             
 
-            x = SCREEN_WIDTH // 5
+            x = SCREEN_WIDTH // 2
             y = SCREEN_HEIGHT // 5
 
             # Render the leaderboard data as text on the screen
             for i, entry in enumerate(leaderboard_data):
                 # Render the player name
                 name_text = font.render(f"{i+1}. {entry['name']}", True, (255, 255, 255))
-                screen.blit(name_text, (x, y + i*45))
+                screen.blit(name_text, (x - SCREEN_WIDTH/4, y + i*45))
                 
                 # Render the player score
                 score_text = font.render(str(entry['score']), True, (255, 255, 255))
-                screen.blit(score_text, (x + 500, y + i*45))
+                screen.blit(score_text, (x + SCREEN_WIDTH/4, y + i*45))
 
             # Update the display
             pygame.display.update()
