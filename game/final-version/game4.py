@@ -30,7 +30,7 @@ pygame.display.set_caption("NETFLICKS")
 
 
 # Define constants
-SCREEN_WIDTH = 1200
+SCREEN_WIDTH = 1500
 SCREEN_HEIGHT = 900
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
