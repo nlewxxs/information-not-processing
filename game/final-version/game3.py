@@ -5,12 +5,13 @@ import threading
 import time
 import json
 import random
+import connection
 
 from pygame import mixer
 
 #NIK'S Section =======================================
 #import Nik's FPGA library
-fpga = FPGA() #instance of FPGA class
+fpga = connection.FPGA() #instance of FPGA class
 fpga.start_communication()
 
 #====================================================
@@ -19,8 +20,8 @@ pygame.init()
 mixer.init()
 
 # Define constants
-SCREEN_WIDTH = 1000
-SCREEN_HEIGHT = 600
+SCREEN_WIDTH = 3000
+SCREEN_HEIGHT = 2000
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
@@ -43,7 +44,7 @@ Leave = False
 # Set up the TCP client socket
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 #the server name and port client wishes to access
-server_name = '54.210.203.6'
+server_name = '3.8.92.216'
 server_port = 12000
 client_socket.connect((server_name, server_port))
 
