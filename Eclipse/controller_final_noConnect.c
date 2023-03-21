@@ -19,64 +19,37 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "alt_types.h"
 #include <sys/alt_stdio.h>
 
 #define THRESHOLD_1G 255 //Threshold for 1G (force of gravity)
 #define INACT_SAMPLES 1000
 
-
-alt_32 xyz[] = {0,0,0}; //array of readings for each axis
-alt_32 xyz_prev[] = {0,0,0};
-int act_thresh_coef[3][2] = {	{12,12},
-								{13,11},
-								{11,13}};
-int inact_thresh_coef[3] = {2,2,2};
-char output[3][2] = {	{'F','B'}, //force left is positive
-						{'U','D'}, //force forward is positive
-						{'L','R'} }; //force downward is positive,
+alt_32 yz[] = {0,0}; //array of readings for each axis
+int act_thresh_coef[2][2] = {{15,14},
+							 {15,15}};
+int inact_thresh_coef[2] = {2,2};
+char output[2][2] = {{'U','D'},   //force downward is positive,
+					 {'L','R'} }; //force left is positive
 
 alt_u8 led = 0x1; //global LED counter to show interrupts occurring
 int timer_f = 0; //flag for isr
 int en_f = 1;
 int inact_counter = 0;
-int nox = 1; //flag to exclude F/B from detection
 alt_up_accelerometer_spi_dev * acc_dev;
 
-//Timer is used to regulate the maximum rate of data input to the game.
-void timer_init(void * isr) { //initialises timer and specifies interrupt service routine
-    IOWR_ALTERA_AVALON_TIMER_CONTROL(TIMER_BASE, 0x0003);
-    IOWR_ALTERA_AVALON_TIMER_STATUS(TIMER_BASE, 0);
-    IOWR_ALTERA_AVALON_TIMER_PERIODL(TIMER_BASE, 0x0000); //change period of timer with these two registers
-    IOWR_ALTERA_AVALON_TIMER_PERIODH(TIMER_BASE, 0x0008); // PERIOD = {PERIODH,PERIODL} (concatenated)
-    alt_irq_register(TIMER_IRQ, 0, isr);
-    IOWR_ALTERA_AVALON_TIMER_CONTROL(TIMER_BASE, 0x0007);
-}
-
-void sys_timer_isr() { //interrupt service routine
-	IOWR_ALTERA_AVALON_TIMER_STATUS(TIMER_BASE, 0);
-	timer_f = 1;
-}
-
-void shift_xyz() {
-	//SHIFT SAMPLE
-	for (int i=0; i<3; i++) {
-		xyz_prev[i] = xyz[i];
-	}
-}
-
-void read_accelerometer(alt_32* xyz) {
+void read_accelerometer(alt_32* yz) {
 	//readings for all axes
-	alt_up_accelerometer_spi_read_x_axis(acc_dev, xyz);
-	alt_up_accelerometer_spi_read_y_axis(acc_dev, xyz+1);
-	alt_up_accelerometer_spi_read_z_axis(acc_dev, xyz+2);
+	alt_up_accelerometer_spi_read_y_axis(acc_dev, yz);
+	alt_up_accelerometer_spi_read_z_axis(acc_dev, yz+1);
 }
 
 int max() { //returns index of the maximum reading out of the 3 axes (current sample)
-	int max = abs(xyz[nox]);
-	int index = nox;
-	for (int i=1; i<3; i++) {
-		if (abs(xyz[i]) > max) {
-			max = abs(xyz[i]);
+	int index = 0;
+	int max = abs(yz[0]);
+	for (int i=1; i<2; i++) {
+		if (abs(yz[i]) > max) {
+			max = abs(yz[i]);
 			index = i;
 		}
 	}
@@ -84,11 +57,11 @@ int max() { //returns index of the maximum reading out of the 3 axes (current sa
 }
 
 int min() { //returns index of the maximum reading out of the 3 axes (current sample)
-	int min = abs(xyz[nox]);
-	int index = nox;
-	for (int i=1; i<3; i++) {
-		if (abs(xyz[i]) < min) {
-			min = abs(xyz[i]);
+	int index = 0;
+	int min = abs(yz[0]);
+	for (int i=1; i<2; i++) {
+		if (abs(yz[i]) < min) {
+			min = abs(yz[i]);
 			index = i;
 		}
 	}
@@ -99,12 +72,12 @@ int detect_ACT() {
 	int i = max();
 
 	//output char if the |acceleration|>threshold and gradient has same polarity
-	if (xyz[i]*10 > (act_thresh_coef[i][0]*THRESHOLD_1G)) { //multiplied by 10 to fine-tune threshold
+	if (yz[i]*10 > (act_thresh_coef[i][0]*THRESHOLD_1G)) { //multiplied by 10 to fine-tune threshold
 		putchar(output[i][0]);
 		printf("\n");
 		led++;
 		return 1;
-	} else if ((xyz[i]*10 < -(act_thresh_coef[i][1]*THRESHOLD_1G))) { //Threshold cannot be below 255 as tilting the controller can cause reading abs(255) in any axis
+	} else if ((yz[i]*10 < -(act_thresh_coef[i][1]*THRESHOLD_1G))) { //Threshold cannot be below 255 as tilting the controller can cause reading abs(255) in any axis
 		putchar(output[i][1]);
 		printf("\n");
 		led++;
@@ -117,7 +90,7 @@ int detect_ACT() {
 }
 
 int detect_INACT(int i){
-	if ((abs(xyz[i])*10) < (inact_thresh_coef[i]*THRESHOLD_1G)) { //multiplied by 10 to fine-tune threshold
+	if ((abs(yz[i])*10) < (inact_thresh_coef[i]*THRESHOLD_1G)) { //multiplied by 10 to fine-tune threshold
 		return 1;
 	} else {
 		return 0; //return 0 if reading magnitude too large
@@ -140,10 +113,16 @@ int wait_INACT() {
 
 }
 
+//input should be 2 characters and a 16 bit score (30bits overall)
+void write_7seg(char* characters, alt_16 score) {
+	alt_u32 format_char0 = ((alt_u32)(characters[0]) << 25) >> 2;
+	alt_u32 format_char1 = ((alt_u32)(characters[1]) << 25) >> 9;
+	alt_u32 output = format_char0 + format_char1 + abs(score);
+	printf("%d %c\n", output >> 23, output >> 23);
+	IOWR_ALTERA_AVALON_PIO_DATA(HEX_DISPLAY_BASE, output);
+}
+
 int main(){
-	//INITIATING FILE FOR SENDING
-//	FILE* fp;
-//	fp = fopen ("/dev/jtag_uart", "r+");
 
 	acc_dev = alt_up_accelerometer_spi_open_dev("/dev/accelerometer_spi");
 	if (acc_dev == NULL) { // if return 1, check if the spi ip name is "accelerometer_spi"
@@ -155,36 +134,34 @@ int main(){
 	//The offset is scaled by a factor of 2 so (127 - 2*-63=0)(127=1G according to datasheet)
 	//The output is scaled to 8 bits (255=1G), difference is confusing but worked.
 
-	printf("hello");
+	printf("connected\n");
 
-	timer_init(sys_timer_isr); //initialising timer with isr
+	//TEST HEX DISPLAY
+	char characters[2] = {'S','c'};
+	printf("%d\n",'s'); //s has ASCII value of 115, S has ASCII value of 83
+	alt_16 score = 123;
+	write_7seg(characters, score);
 
 	while(1){
 		//READ DATA
-		alt_32 xyz_raw[] = {0,0,0};
-		read_accelerometer(xyz_raw);
+		alt_32 yz_raw[] = {0,0};
+		read_accelerometer(yz_raw);
 
 		//FILTER DATA
-		IOWR_ALTERA_AVALON_PIO_DATA(FILTER_X_IN_BASE, xyz_raw[0]);
-		IOWR_ALTERA_AVALON_PIO_DATA(FILTER_Y_IN_BASE, xyz_raw[1]);
-		IOWR_ALTERA_AVALON_PIO_DATA(FILTER_Z_IN_BASE, xyz_raw[2]);
+		IOWR_ALTERA_AVALON_PIO_DATA(FILTER_Y_IN_BASE, yz_raw[0]);
+		IOWR_ALTERA_AVALON_PIO_DATA(FILTER_Z_IN_BASE, yz_raw[1]);
 
-		xyz[0] = IORD_ALTERA_AVALON_PIO_DATA(FILTER_X_OUT_BASE);
-		xyz[1] = IORD_ALTERA_AVALON_PIO_DATA(FILTER_Y_OUT_BASE);
-		xyz[2] = IORD_ALTERA_AVALON_PIO_DATA(FILTER_Z_OUT_BASE);
+		yz[0] = IORD_ALTERA_AVALON_PIO_DATA(FILTER_Y_OUT_BASE);
+		yz[1] = IORD_ALTERA_AVALON_PIO_DATA(FILTER_Z_OUT_BASE);
 
-		//SUBROUTINE TRIGGERED BY TIMER
-		if (timer_f & en_f) {
+		//PROCESS INPUT
+		if (en_f) {
 			en_f = !detect_ACT();
-			shift_xyz();
-			timer_f = 0;
 		} else if (!en_f) {
 			en_f = wait_INACT();
 		}
 
-		//TESTING HEX OUTPUTS
-		IOWR_ALTERA_AVALON_PIO_DATA(HEX_DISPLAY_BASE, abs(xyz[2]));
-		IOWR_ALTERA_AVALON_PIO_DATA(LED_BASE, led);
+
 
 	}
 
