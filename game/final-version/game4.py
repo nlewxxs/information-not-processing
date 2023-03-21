@@ -558,7 +558,7 @@ while True:
                 pygame.draw.rect(screen, key['color1'], key['rect'])
                 key['pressed'] = True
             else:
-                screen.blit(screen, key['surface'], key['rect'])
+                screen.blit(key['surface'], key['rect'])
                 key['pressed'] = False
 
         # Draw the rectangles for the falling notes
