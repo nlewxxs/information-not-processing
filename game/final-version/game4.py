@@ -332,7 +332,7 @@ while True:
         background_image = pygame.image.load('assets/homepage.png')
         image = pygame.transform.scale(background_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
         screen.blit(image, (0, 0))
-        draw_text(name, medium_font, YELLOW, SCREEN_WIDTH // 1.5, SCREEN_HEIGHT // 1.46)
+        draw_text(name, medium_font, YELLOW, SCREEN_WIDTH // 1.65, SCREEN_HEIGHT // 1.46)
         pygame.display.update()
 
         for event in pygame.event.get():
