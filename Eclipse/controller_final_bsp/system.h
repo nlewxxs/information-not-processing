@@ -4,7 +4,7 @@
  * Machine generated for CPU 'cpu' in SOPC Builder design 'nios_controller'
  * SOPC Builder design path: C:/Users/andre/IP/Coursework/Golden_Top/nios_controller.sopcinfo
  *
- * Generated: Mon Mar 20 00:17:22 GMT 2023
+ * Generated: Tue Mar 21 16:10:57 GMT 2023
  */
 
 /*
@@ -478,7 +478,7 @@
 #define SYSID_QSYS_IRQ_INTERRUPT_CONTROLLER_ID -1
 #define SYSID_QSYS_NAME "/dev/sysid_qsys"
 #define SYSID_QSYS_SPAN 8
-#define SYSID_QSYS_TIMESTAMP 1679271235
+#define SYSID_QSYS_TIMESTAMP 1679412155
 #define SYSID_QSYS_TYPE "altera_avalon_sysid_qsys"
 
 

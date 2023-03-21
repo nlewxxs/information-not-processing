@@ -5,7 +5,7 @@ input wire rst;
 output reg clk_div;
 
 reg [31:0] count;
-localparam constNumber = 50000;
+localparam constNumber = 25000;
 
 always @ (posedge(clk), posedge(rst))
 begin
