@@ -142,8 +142,8 @@ int wait_INACT() {
 
 int main(){
 	//INITIATING FILE FOR SENDING
-	FILE* fp;
-	fp = fopen ("/dev/jtag_uart", "r+");
+//	FILE* fp;
+//	fp = fopen ("/dev/jtag_uart", "r+");
 
 	acc_dev = alt_up_accelerometer_spi_open_dev("/dev/accelerometer_spi");
 	if (acc_dev == NULL) { // if return 1, check if the spi ip name is "accelerometer_spi"
@@ -185,16 +185,6 @@ int main(){
 		//TESTING HEX OUTPUTS
 		IOWR_ALTERA_AVALON_PIO_DATA(HEX_DISPLAY_BASE, abs(xyz[2]));
 		IOWR_ALTERA_AVALON_PIO_DATA(LED_BASE, led);
-
-		//COMMUNICATION WITH PC
-		if (fp) {
-		    prompt = getc(fp);
-		    fprintf(fp, "<--> Detected the character %c <--> \n", prompt);
-		    if (prompt == 'W' || prompt == 'L') {
-
-		    }
-		}
-
 
 	}
 
