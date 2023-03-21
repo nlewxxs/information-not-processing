@@ -12,7 +12,7 @@ pygame.init()
 mixer.init()
 
 # load the icon image
-icon_image = pygame.image.load("icon.png")
+icon_image = pygame.image.load("assets/icon.png")
 
 # set the window icon to the icon image
 pygame.display.set_icon(icon_image)
