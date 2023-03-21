@@ -116,10 +116,10 @@ blueNet_surface.blit(pygame.transform.scale(blueNet, (button_width, button_heigh
 yellowNet_surface.blit(pygame.transform.scale(yellowNet, (button_width, button_height)), (0, 0))
 
 keys = [
-    {'surface': redNet_surface, 'rect': redNet_surface.get_rect(centerx=200, centery=500), 'color1': RED, 'color2': (180, 0, 0), 'key': pygame.K_1, 'pressed': False, 'label': 'L\n'},
-    {'surface': greenNet_surface, 'rect': greenNet_surface.get_rect(centerx=400, centery=500), 'color1': GREEN, 'color2': (0, 180, 0), 'key': pygame.K_2, 'pressed': False, 'label': 'U\n'},
-    {'surface': blueNet_surface, 'rect': blueNet_surface.get_rect(centerx=600, centery=500), 'color1': BLUE, 'color2': (0, 0, 180), 'key': pygame.K_3, 'pressed': False, 'label': 'D\n'},
-    {'surface': yellowNet_surface, 'rect': yellowNet_surface.get_rect(centerx=800, centery=500), 'color1': YELLOW, 'color2': (180, 180, 0), 'key': pygame.K_4, 'pressed': False, 'label': 'R\n'}
+    {'surface': redNet_surface, 'rect': redNet_surface.get_rect(centerx=SCREEN_WIDTH/5, centery=500), 'color1': RED, 'color2': (180, 0, 0), 'key': pygame.K_1, 'pressed': False, 'label': 'L\n'},
+    {'surface': greenNet_surface, 'rect': greenNet_surface.get_rect(centerx=2*SCREEN_WIDTH/5, centery=500), 'color1': GREEN, 'color2': (0, 180, 0), 'key': pygame.K_2, 'pressed': False, 'label': 'U\n'},
+    {'surface': blueNet_surface, 'rect': blueNet_surface.get_rect(centerx=3*SCREEN_WIDTH/5, centery=500), 'color1': BLUE, 'color2': (0, 0, 180), 'key': pygame.K_3, 'pressed': False, 'label': 'D\n'},
+    {'surface': yellowNet_surface, 'rect': yellowNet_surface.get_rect(centerx=4*SCREEN_WIDTH/5, centery=500), 'color1': YELLOW, 'color2': (180, 180, 0), 'key': pygame.K_4, 'pressed': False, 'label': 'R\n'}
 ]
 
 # Define levels
@@ -625,16 +625,16 @@ while True:
 
         if is_player1:
             othertext = tiny_font.render(f"Other Player Score: {P2Score}", True,"white")
-            screen.blit(othertext,(600,0))
+            screen.blit(othertext,(SCREEN_WIDTH-400,0))
         
         if is_player2:
             othertext = tiny_font.render(f"Other Player Score: {P1Score}", True,"white")
-            screen.blit(othertext,(600,0))
+            screen.blit(othertext,(SCREEN_WIDTH-400,0))
         
 
         # Draw combo and score text
         combotext = medium_font.render(str(combo)+"X", True,"white")
-        screen.blit(combotext,(0,500)) 
+        screen.blit(combotext,(0,SCREEN_HEIGHT)) 
         scoretext = medium_font.render("SCORE: " + str(score), True,"white")
         screen.blit(scoretext,(0,0)) 
 
