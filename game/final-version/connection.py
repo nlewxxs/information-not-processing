@@ -153,15 +153,7 @@ class FPGA(Connection):
 
 if __name__ == "__main__":
 
-    fpga = FPGA()               # init a new FPGA instance
-    fpga.start_communication()  # initialise communication
-    # fpga.read()                 # get reading at that point in time
-    while fpga._control != 'q':
-        print(("reading: " + fpga.read()),)
-        # time.sleep(0.1))
-        # fpga.send_result(True, "2222")
-    fpga.kill()
-    # fpga.send_result(True, '0230')
+    print("hello!")
 
 
             
