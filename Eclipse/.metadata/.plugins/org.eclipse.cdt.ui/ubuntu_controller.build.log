@@ -1,0 +1,9 @@
+17:15:36 **** Build of configuration Nios II for project ubuntu_controller ****
+make all 
+Info: Building ../ubuntu_controller_bsp/
+make --no-print-directory -C ../ubuntu_controller_bsp/
+[BSP build complete]
+[ubuntu_controller build complete]
+
+17:15:37 Build Finished (took 1s.295ms)
+

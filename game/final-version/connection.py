@@ -26,7 +26,6 @@ class Connection:
         except IOError as e:
             if e.errno != errno.EPIPE and e.errno != errno.EINVAL:
                 raise
-        # print("sending >> " + cmd)
         self._nios.stdin.flush()
 
 
@@ -74,7 +73,7 @@ class Connection:
 class FPGA(Connection):
     def __init__(self) -> None:
         super().__init__()
-        self._score = "2468"
+        self._score = "0000"
         print(list(self._score))
     
     def communicate(self) -> None:
@@ -82,21 +81,7 @@ class FPGA(Connection):
             if self._control == "q":
                 self._comms = False
                 break
-            # if self._control in ['0', '1']:
-            #     print('>> sending control signal: ' + self._control)
-            #     for i in range(3):
-            #         self.send_on_jtag(self._control)
-            #         time.sleep(0.1)
-            #     self._control = 'a'
 
-            # elif self._control == 'q':
-            #     break
-
-            # elif self._control == 'd':
-            #     self._show_data ^= True # toggle
-            #     self._control = 'a' # reset to default
-            
-            # else:
             myscore = list(self._score)
             self.send_on_jtag('s')
             time.sleep(0.1)
@@ -119,37 +104,26 @@ class FPGA(Connection):
         com.daemon = True
         com.start()
     
+
     def read(self) -> str:
         return self._reading
 
+
     def kill(self) -> None:
         os.killpg(os.getpgid(self._nios.pid), signal.SIGTERM)        
-    
-    # def send_result(self, win : bool, score : str) -> None:
-    #     self._comms = False
-    #     result = 'W' if win else 'L'
-    #     self.send_on_jtag(result) # sends win or loss, prepares for score transmission
 
-    #     for i in list(score):
-    #         time.sleep(0.2)
-    #         self.send_on_jtag(i)
-        
-    #     time.sleep(0.2)
-    #     self.send_on_jtag('d') # done
-
-    #     sendtime = time.time()
-    #     while time.time() < sendtime + 2:
-    #         if self._reading == "d":  # received by fpga, confirmed
-    #             self._comms = True  # restart thread, new object required
-    #             com = threading.Thread(target=self.communicate)
-    #             com.daemon = True
-    #             com.start()
-    #             break      
-        
-        #raise FpgaNoResponse # fpga did not confirm
 
     def update_score(self, score : str) -> None:
         self._score = score   
 
 if __name__ == "__main__":
-	print("hello world")
+    print("meatball")
+    
+    # fpga = FPGA()
+    # fpga.start_communication()
+
+    # while True:
+    #     for i in range(30):
+    #         print("reading: " + fpga.read())
+    #         time.sleep(0.1)
+    #     fpga.update_score("0011")
