@@ -1,6 +1,6 @@
-17:15:38 **** Build of configuration Nios II for project ubuntu_controller_bsp ****
+19:39:41 **** Incremental Build of configuration Nios II for project ubuntu_controller_bsp ****
 make all 
 [BSP build complete]
 
-17:15:39 Build Finished (took 1s.136ms)
+19:39:43 Build Finished (took 1s.704ms)
 

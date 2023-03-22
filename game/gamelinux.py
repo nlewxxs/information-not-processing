@@ -5,13 +5,13 @@ import threading
 import time
 import json
 import random
-import wconnection2
+import connection
 
 from pygame import mixer
 
 #NIK'S Section =======================================
 #import Nik's FPGA library
-fpga = wconnection2.FPGA() #instance of FPGA class
+fpga = connection.FPGA() #instance of FPGA class
 fpga.start_communication()
 
 #====================================================

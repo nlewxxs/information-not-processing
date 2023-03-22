@@ -160,7 +160,7 @@ int main(){
 	//TEST HEX DISPLAY
 	char characters[2] = {'S','c'};
 	printf("%d\n",'s'); //s has ASCII value of 115, S has ASCII value of 83
-	alt_16 score = 123;
+	alt_16 score = 0;
 	write_7seg(characters, score);
 
 	printf("start");
@@ -172,7 +172,7 @@ int main(){
 
 	while(1){
 
-		for (int k = 0; k < 10000; k++){ //READ DATA
+		for (int k = 0; k < 5000; k++){ //READ DATA
 			alt_32 yz_raw[] = {0,0};
 			read_accelerometer(yz_raw);
 

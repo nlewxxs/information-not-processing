@@ -2,8 +2,8 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>hal</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>Mar 22, 2023 4:47:17 PM</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1679503637856</BspGeneratedUnixTimeStamp>
+        <BspGeneratedTimeStamp>Mar 22, 2023 7:37:44 PM</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1679513864064</BspGeneratedUnixTimeStamp>
         <BspGeneratedLocation>/home/nik/eie/ip/information-not-processing/Eclipse/ubuntu_controller_bsp</BspGeneratedLocation>
         <BspSettingsFile>settings.bsp</BspSettingsFile>
         <SopcDesignFile>../nios_controller_final.sopcinfo</SopcDesignFile>
