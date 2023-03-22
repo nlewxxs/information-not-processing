@@ -152,9 +152,4 @@ class FPGA(Connection):
         self._score = score   
 
 if __name__ == "__main__":
-
-    print("hello!")
-
-
-            
-
+	print("hello world")
