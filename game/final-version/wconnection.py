@@ -14,26 +14,30 @@ class FpgaNoResponse(Exception):
 class Connection:
 
     def __init__(self) -> None:
-        self._nios = subprocess.Popen(['C:/intelFPGA_lite/18.1/nios2eds/Nios II Command Shell.bat'], stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+        #'C:/intelFPGA_lite/18.1/quartus/bin64/nios2-terminal.exe'
+        self._nios = subprocess.Popen(['C:/intelFPGA_lite/18.1/quartus/bin64/nios2-terminal.exe'], stdout=subprocess.PIPE, stdin=subprocess.PIPE)
         self._control = ""
         self._reading = ""
         self._comms = True
     
 
     def send_on_jtag(self, cmd : str) -> None:
-        try:
-            self._nios.stdin.write(cmd.encode('utf-8'))
-        except IOError as e:
-            if e.errno != errno.EPIPE and e.errno != errno.EINVAL:
-                raise
-        # print("sending >> " + cmd)
-        self._nios.stdin.flush()
+        while self._comms:
+
+            try:
+                self._nios.stdin.write(cmd.encode('utf-8'))
+            except IOError as e:
+                if e.errno != errno.EPIPE and e.errno != errno.EINVAL:
+                    raise
+            # print("sending >> " + cmd)
+            self._nios.stdin.flush()
 
 
     def read_from_terminal(self) -> None:
         while True:
             try: 
                 self._reading = self._nios.stdout.readline().decode('utf-8')
+                #print(self._reading)
             except UnicodeError:
                 continue
         
@@ -103,7 +107,13 @@ class FPGA(Connection):
             self.send_on_jtag(myscore[3])
             time.sleep(0.1)
 
-        os.killpg(os.getpgid(self._nios.pid), signal.SIGTERM)
+        '''
+        # not sure for the following killing process
+        try:
+            subprocess.run(['taskkill', '/pid', str(self._nios.pid), '/t', '/f'], check=True)
+        except subprocess.CalledProcessError:
+            pass
+        '''
     
     def start_communication(self) -> None:
 
@@ -119,6 +129,8 @@ class FPGA(Connection):
     def kill(self) -> None:
         #os.killpg(os.getpgid(self._nios.pid), signal.SIGTERM)        
         print ("idkkkk")
+
+        self._comms = False
         
         # not sure for the following killing process
         try:

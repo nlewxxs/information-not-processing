@@ -30,8 +30,8 @@ pygame.display.set_caption("NETFLICKS")
 
 
 # Define constants
-SCREEN_WIDTH = 1500
-SCREEN_HEIGHT = 900
+SCREEN_WIDTH = 1000
+SCREEN_HEIGHT = 600
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
@@ -56,7 +56,7 @@ Leave = False
 # Set up the TCP client socket
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 #the server name and port client wishes to access
-server_name = '3.8.92.216'
+server_name = '54.210.203.6'
 server_port = 12000
 client_socket.connect((server_name, server_port))
 
@@ -116,10 +116,10 @@ blueNet_surface.blit(pygame.transform.scale(blueNet, (button_width, button_heigh
 yellowNet_surface.blit(pygame.transform.scale(yellowNet, (button_width, button_height)), (0, 0))
 
 keys = [
-    {'surface': redNet_surface, 'rect': redNet_surface.get_rect(centerx=SCREEN_WIDTH/5, centery=SCREEN_HEIGHT-100), 'color1': RED, 'color2': (180, 0, 0), 'key': pygame.K_1, 'pressed': False, 'label': 'L\n'},
-    {'surface': greenNet_surface, 'rect': greenNet_surface.get_rect(centerx=2*SCREEN_WIDTH/5, centery=SCREEN_HEIGHT-100), 'color1': GREEN, 'color2': (0, 180, 0), 'key': pygame.K_2, 'pressed': False, 'label': 'U\n'},
-    {'surface': blueNet_surface, 'rect': blueNet_surface.get_rect(centerx=3*SCREEN_WIDTH/5, centery=SCREEN_HEIGHT-100), 'color1': BLUE, 'color2': (0, 0, 180), 'key': pygame.K_3, 'pressed': False, 'label': 'D\n'},
-    {'surface': yellowNet_surface, 'rect': yellowNet_surface.get_rect(centerx=4*SCREEN_WIDTH/5, centery=SCREEN_HEIGHT-100), 'color1': YELLOW, 'color2': (180, 180, 0), 'key': pygame.K_4, 'pressed': False, 'label': 'R\n'}
+    {'surface': redNet_surface, 'rect': redNet_surface.get_rect(centerx=SCREEN_WIDTH/5, centery=SCREEN_HEIGHT-100), 'color1': RED, 'color2': (180, 0, 0), 'key': pygame.K_1, 'pressed': False, 'label': 'L\r\n'},
+    {'surface': greenNet_surface, 'rect': greenNet_surface.get_rect(centerx=2*SCREEN_WIDTH/5, centery=SCREEN_HEIGHT-100), 'color1': GREEN, 'color2': (0, 180, 0), 'key': pygame.K_2, 'pressed': False, 'label': 'U\r\n'},
+    {'surface': blueNet_surface, 'rect': blueNet_surface.get_rect(centerx=3*SCREEN_WIDTH/5, centery=SCREEN_HEIGHT-100), 'color1': BLUE, 'color2': (0, 0, 180), 'key': pygame.K_3, 'pressed': False, 'label': 'D\r\n'},
+    {'surface': yellowNet_surface, 'rect': yellowNet_surface.get_rect(centerx=4*SCREEN_WIDTH/5, centery=SCREEN_HEIGHT-100), 'color1': YELLOW, 'color2': (180, 180, 0), 'key': pygame.K_4, 'pressed': False, 'label': 'R\r\n'}
 ]
 
 # Define levels
@@ -346,6 +346,7 @@ while True:
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                fpga.kill()
                 Leave = True
                 time.sleep(1) 
                 client_socket.send('quit'.encode())
@@ -377,6 +378,7 @@ while True:
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                fpga.kill()
                 Leave = True
                 time.sleep(1)  # use to let the thread close first before disconnecting the socket
                 client_socket.send('quit'.encode())
@@ -406,6 +408,7 @@ while True:
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                fpga.kill()
                 Leave = True
                 time.sleep(1)  # use to let the thread close first before disconnecting the socket
                 client_socket.send('quit'.encode())
@@ -460,6 +463,7 @@ while True:
     
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
+                    fpga.kill()
                     Leave = True
                     time.sleep(1)  # use to let the thread close first before disconnecting the socket
                     client_socket.send('quit'.encode())
@@ -511,6 +515,7 @@ while True:
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                fpga.kill()
                 Leave = True
                 time.sleep(1)  # use to let the thread close first before disconnecting the socket
                 client_socket.send('quit'.encode())
@@ -540,6 +545,7 @@ while True:
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                fpga.kill()
                 Leave = True
                 time.sleep(1)  # use to let the thread close first before disconnecting the socket
                 client_socket.send('quit'.encode())
@@ -553,8 +559,11 @@ while True:
 
         reading = fpga.read()
 
+        print (reading)
+
         for key in keys:
             if k[key['key']] or reading == key['label']:
+                print ("detected !!!!!!")
                 pygame.draw.rect(screen, key['color1'], key['rect'])
                 key['pressed'] = True
             else:
@@ -722,6 +731,7 @@ while True:
         for event in pygame.event.get():
             
             if event.type == pygame.QUIT:
+                fpga.kill()
                 Leave = True
                 time.sleep(1)  # use to let the thread close first before disconnecting the socket
                 client_socket.send('quit'.encode())
@@ -771,6 +781,7 @@ while True:
             for event in pygame.event.get():
             
                 if event.type == pygame.QUIT:
+                    fpga.kill()
                     Leave = True
                     time.sleep(1)  # use to let the thread close first before disconnecting the socket
                     client_socket.send('quit'.encode())
